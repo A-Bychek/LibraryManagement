@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "LibraryManagement.Shared": {
+      "commandName": "Project"
+    },
+    "Container (Dockerfile)": {
+      "commandName": "Docker"
+    }
+  }
+}

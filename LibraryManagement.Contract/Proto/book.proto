@@ -1,0 +1,77 @@
+syntax = "proto3";
+
+package librarymanagement;
+
+service BookService {
+  rpc GetBooks(BookSearchRequest) returns (BookListResponse);
+  rpc GetBook(BookGetRequest) returns (BookGetResponse);
+  rpc CreateBook(CreateBookRequest) returns (BookResponse);
+  rpc UpdateBook(UpdateBookRequest) returns (BookResponse);
+  rpc DeleteBook(BookDeleteRequest) returns (DeleteResponse);
+}
+
+message BookSearchRequest {
+  string search_term = 1;
+  int64 author_id = 2;
+  int64 category_id = 3;
+  bool is_available = 4;
+  int32 page_number = 5;
+  int32 page_size = 6;
+}
+
+message BookGetRequest {
+  int64 book_id = 1;
+}
+
+message CreateBookRequest {
+  string title = 1;
+  string isbn = 2;
+  string description = 3;
+  int64 author_id = 4;
+  int64 category_id = 5;
+  string published_date = 6; // ISO 8601 format
+  int32 page_count = 7;
+}
+
+message UpdateBookRequest {
+  int64 book_id = 1;
+  string title = 2;
+  string description = 3;
+  int64 category_id = 4;
+  string published_date = 5;
+  int32 page_count = 6;
+}
+
+message BookDeleteRequest {
+  int64 book_id = 1;
+}
+
+message BookResponse {
+  int64 book_id = 1;
+  string title = 2;
+  string isbn = 3;
+  string description = 4;
+  int64 author_id = 5;
+  string author_name = 6;
+  int64 category_id = 7;
+  string category_name = 8;
+  string published_date = 9;
+  int32 page_count = 10;
+  bool is_available = 11;
+}
+
+message BookListResponse {
+  repeated BookResponse books = 1;
+  int32 total_count = 2;
+  int32 page_number = 3;
+  int32 page_size = 4;
+}
+
+message BookGetResponse {
+  BookResponse book = 1;
+}
+
+message DeleteResponse {
+  bool success = 1;
+  string message = 2;
+}
