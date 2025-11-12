@@ -1,7 +1,10 @@
 ﻿using LibraryManagement.Application.DTOs;
+using LibraryManagement.Application.Interfaces.Repositories;
 using LibraryManagement.Application.QueryModels.Authors;
 using LibraryManagement.Domain.Entities;
-using LibraryManagement.Application.Interfaces.Repositories;
+using LibraryManagement.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
+using LibraryManagement.Shared;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -13,29 +16,70 @@ namespace LibraryManagement.Infrastructure.Repositories
 {
     public class AuthorRepository: IAuthorRepository
     {
-        public Task<Author> GetByIdAsync(long authorId, CancellationToken cancellationToken = default)
+        private readonly LibraryManagementDbContext _context;
+
+        public AuthorRepository(LibraryManagementDbContext context)
         {
-            throw new NotImplementedException();
+            _context = context;
         }
-        public Task<Author> AddAsync(Author author, CancellationToken cancellationToken = default)
+        public async Task<Author?> GetByIdAsync(long authorId, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            return await _context.Authors
+                .Include(x => x.Books)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.AuthorId == authorId, cancellationToken);
         }
-        public Task<Author> UpdateAsync(Author author, CancellationToken cancellationToken = default)
+        public async Task<Author> AddAsync(Author author, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            await _context.Authors.AddAsync(author, cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken);
+            return author;
         }
-        public Task<bool> DeleteAsync(Author author, CancellationToken cancellationToken = default)
+        public async Task<Author> UpdateAsync(Author author, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            _context.Authors.Update(author);
+            await _context.SaveChangesAsync(cancellationToken);
+            return author;
         }
-        public Task<ICollection<Author>> GetAllAsync(CancellationToken cancellationToken = default)
+        public async Task<Author> DeleteAsync(Author author, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            _context.Authors.Remove(author);
+            await _context.SaveChangesAsync();
+            return author;
         }
-        public Task<Author> FindAsync(long authorId, AuthorSearchArgs args, CancellationToken cancellationToken = default)
+        public async Task<ICollection<Author>> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            return await _context.Authors.ToListAsync(cancellationToken);
+        }
+        public async Task<PagedResult<Author>> FindAsync(AuthorSearchArgs authorSearchArgs, CancellationToken cancellationToken = default)
+        {
+            var query = _context.Authors
+                .Include(x => x.Books)
+                .AsNoTracking()
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(authorSearchArgs.SearchTerm))
+            {
+                var searchTerm = authorSearchArgs.SearchTerm.ToLower();
+                query = query.Where(x =>
+                    EF.Functions.Like(x.FirstName, $"%{searchTerm}%") || EF.Functions.Like(x.LastName, $"%{searchTerm}%"));
+            }
+
+            if (authorSearchArgs.IsActive.HasValue)
+            {
+                query = query.Where(x => x.IsActive == authorSearchArgs.IsActive.Value);
+            }
+
+            var totalCount = await query.CountAsync(cancellationToken);
+
+            var items = await query
+                .OrderBy(x => x.LastName)
+                .ThenBy(x => x.FirstName)
+                .Skip((authorSearchArgs.PageNumber - 1) * authorSearchArgs.PageSize)
+                .Take(authorSearchArgs.PageSize)
+                .ToListAsync(cancellationToken);
+
+            return PagedResult<Author>.Create(items, totalCount, authorSearchArgs.PageNumber, authorSearchArgs.PageSize);
         }
     }
 }

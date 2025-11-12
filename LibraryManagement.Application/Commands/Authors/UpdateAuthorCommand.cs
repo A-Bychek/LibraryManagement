@@ -2,7 +2,7 @@
 {
     public class UpdateAuthorCommand
     {
-        public long? Authorid { get; set; }
+        public long AuthorId { get; set; }
         public string? FirstName { get; set; }
         public string? LastName { get; set; }
 
