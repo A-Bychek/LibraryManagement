@@ -6,6 +6,6 @@ namespace LibraryManagement.Application.Commands.Borrowing
     {
         public long BookId { get; set; }
         public long UserId { get; set; }
-        public int DaysToReturn { get; set; }
+        public int DaysToReturn { get; set; } = 14;
     }
 }

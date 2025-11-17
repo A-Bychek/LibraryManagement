@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
-using LibraryManagement.Application.DTOs.Author;
+using LibraryManagement.Application.DTOs.Authors;
 using LibraryManagement.Domain.Entities;
 
 namespace LibraryManagement.Application.Mappings

@@ -1,11 +1,13 @@
-﻿using LibraryManagement.Application.Commands.Author;
+﻿using AutoMapper;
+using FluentValidation;
+using LibraryManagement.Application.Commands.Author;
 using LibraryManagement.Application.DTOs.Authors;
+using LibraryManagement.Application.Interfaces.Repositories;
 using LibraryManagement.Application.Interfaces.Services;
 using LibraryManagement.Application.QueryModels.Authors;
-using LibraryManagement.Application.Interfaces.Repositories;
 using LibraryManagement.Domain.Entities;
 using LibraryManagement.Shared;
-using AutoMapper;
+using LibraryManagement.Shared.Exceptions;
 
 namespace LibraryManagement.Application.Services.Authors
 {
@@ -13,10 +15,19 @@ namespace LibraryManagement.Application.Services.Authors
     {
         private IAuthorRepository _authorRepository { get; set; } = null!;
         private IMapper _mapper { get; set; } = null!;
-        public AuthorService(IAuthorRepository authorRepository, IMapper mapper)
+        private IValidator<CreateAuthorCommand> _createAuthorCommandValidator { get; set; }
+        private IValidator<UpdateAuthorCommand> _updateAuthorCommandValidator { get; set; }
+        public AuthorService(
+            IAuthorRepository authorRepository, 
+            IMapper mapper,
+            IValidator<CreateAuthorCommand> createAuthorCommandValidator,
+            IValidator<UpdateAuthorCommand> updateAuthorCommandValidator
+            )
         {
             _authorRepository = authorRepository;
             _mapper = mapper;
+            _createAuthorCommandValidator = createAuthorCommandValidator;
+            _updateAuthorCommandValidator = updateAuthorCommandValidator;
         }
 
         public async Task<PagedResult<AuthorDto>> GetAuthorsAsync(AuthorSearchArgs authorSearchArgs, CancellationToken cancellationToken)
@@ -34,11 +45,12 @@ namespace LibraryManagement.Application.Services.Authors
         }
         public async Task<AuthorDto> GetAuthorAsync(long authorId, CancellationToken cancellationToken)
         {
-            var author = await _authorRepository.GetByIdAsync(authorId, cancellationToken) ?? throw new Exception($"Can't find a {authorId} author"!);
+            var author = await _authorRepository.GetByIdAsync(authorId, cancellationToken) ?? throw new NotFoundException($"Can't find a {authorId} author"!);
             return _mapper.Map<AuthorDto>(author);
         }
         public async Task<AuthorDto> CreateAuthorAsync(CreateAuthorCommand createAuthorCommand, CancellationToken cancellationToken)
         {
+            await _createAuthorCommandValidator.ValidateAndThrowAsync(createAuthorCommand, cancellationToken);
             var author = new Author()
             {
 
@@ -52,7 +64,8 @@ namespace LibraryManagement.Application.Services.Authors
         }
         public async Task<AuthorDto> UpdateAuthorAsync(UpdateAuthorCommand updateAuthorCommand, CancellationToken cancellationToken)
         {
-            var author = await _authorRepository.GetByIdAsync(updateAuthorCommand.AuthorId, cancellationToken) ?? throw new Exception($"Can't find a {updateAuthorCommand.AuthorId} author!");
+            await _updateAuthorCommandValidator.ValidateAndThrowAsync (updateAuthorCommand, cancellationToken);
+            var author = await _authorRepository.GetByIdAsync(updateAuthorCommand.AuthorId, cancellationToken) ?? throw new NotFoundException($"Can't find a {updateAuthorCommand.AuthorId} author!");
             author.FirstName = updateAuthorCommand.FirstName ?? author.FirstName;
             author.LastName = updateAuthorCommand.LastName ?? author.LastName;
             author.DateOfBirth = updateAuthorCommand.DateOfBirth is not null ? Convert.ToDateTime(updateAuthorCommand.DateOfBirth) : author.DateOfBirth;

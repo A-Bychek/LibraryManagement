@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using FluentValidation;
 using LibraryManagement.Application.Commands.Book;
 using LibraryManagement.Application.DTOs.Books;
 using LibraryManagement.Application.Interfaces.Repositories;
@@ -7,6 +8,7 @@ using LibraryManagement.Application.QueryModels.Books;
 using LibraryManagement.Domain.Entities;
 using LibraryManagement.Domain.Enums;
 using LibraryManagement.Shared;
+using LibraryManagement.Shared.Exceptions;
 
 namespace LibraryManagement.Application.Services.Books
 {
@@ -14,10 +16,19 @@ namespace LibraryManagement.Application.Services.Books
     {
         private IBookRepository _bookRepository { get; set; } = null!;
         private IMapper _mapper { get; set; } = null!;
-        public BookService(IBookRepository bookRepository, IMapper mapper)
+        private IValidator<CreateBookCommand> _createBookCommandValidator { get; set; }
+        private IValidator<UpdateBookCommand> _updateBookCommandValidator { get; set; }
+        public BookService(
+            IBookRepository bookRepository,
+            IMapper mapper,
+            IValidator<CreateBookCommand> createBookCommandValidator,
+            IValidator<UpdateBookCommand> updateBookCommandValidator
+            )
         {
             _bookRepository = bookRepository;
             _mapper = mapper;
+            _createBookCommandValidator = createBookCommandValidator;
+            _updateBookCommandValidator = updateBookCommandValidator;
         }
         public async Task<BookDto> GetBookAsync(long bookId, CancellationToken cancellationToken)
         {
@@ -40,6 +51,7 @@ namespace LibraryManagement.Application.Services.Books
         }
         public async Task<BookDto> CreateBookAsync(CreateBookCommand createBookCommand, CancellationToken cancellationToken)
         {
+            await _createBookCommandValidator.ValidateAndThrowAsync(createBookCommand, cancellationToken);
             var book = new Book()
             {
                 Title = createBookCommand.Title,
@@ -56,7 +68,8 @@ namespace LibraryManagement.Application.Services.Books
 
         public async Task<BookDto> UpdateBookAsync(UpdateBookCommand updateBookCommand, CancellationToken cancellationToken)
         {
-            var book = await _bookRepository.GetByIdAsync(updateBookCommand.BookId, cancellationToken) ?? throw new Exception($"Can't find a {updateBookCommand.BookId} book!");
+            await _updateBookCommandValidator.ValidateAndThrowAsync(updateBookCommand, cancellationToken);
+            var book = await _bookRepository.GetByIdAsync(updateBookCommand.BookId, cancellationToken) ?? throw new NotFoundException($"Can't find a {updateBookCommand.BookId} book!");
             book.Title = updateBookCommand.Title ?? book.Title;
             book.Description = updateBookCommand.Description ?? book.Description;
             book.CategoryId = updateBookCommand.CategoryId ?? book.CategoryId;
