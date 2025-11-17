@@ -1,5 +1,5 @@
 ﻿using LibraryManagement.Application.Commands.Borrowing;
-using LibraryManagement.Application.DTOs.Borrowing;
+using LibraryManagement.Application.DTOs.Borrowings;
 using System;
 using System.Collections.Generic;
 using System.Linq;

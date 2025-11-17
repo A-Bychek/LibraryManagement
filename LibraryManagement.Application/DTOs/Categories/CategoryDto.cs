@@ -1,4 +1,4 @@
-﻿namespace LibraryManagement.Application.DTOs.Category
+﻿namespace LibraryManagement.Application.DTOs.Categories
 {
     public class CategoryDto
     {

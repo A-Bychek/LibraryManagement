@@ -25,15 +25,6 @@ namespace LibraryManagement.Infrastructure.Data
         {
             _ = modelBuilder.ApplyConfigurationsFromAssembly(typeof(LibraryManagementDbContext).Assembly);
 
-            modelBuilder.Entity<Book>().HasIndex(x => x.ISBN).IsUnique();
-            modelBuilder.Entity<Book>().HasAlternateKey(x => x.AuthorId);
-            modelBuilder.Entity<Book>().HasAlternateKey(x => x.CategoryId);
-
-            modelBuilder.Entity<Category>().HasIndex(x => x.Name).IsUnique();
-
-            modelBuilder.Entity<Borrowing>().HasAlternateKey(x => x.BookId);
-            modelBuilder.Entity<Borrowing>().HasAlternateKey(x => x.UserId);
-
             base.OnModelCreating(modelBuilder);
         }
     }

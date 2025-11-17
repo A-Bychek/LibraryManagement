@@ -1,6 +1,11 @@
-﻿using LibraryManagement.Application.QueryModels.Borrowings;
+﻿using LibraryManagement.Application.Interfaces.Repositories;
+using LibraryManagement.Application.QueryModels.Books;
+using LibraryManagement.Application.QueryModels.Borrowings;
 using LibraryManagement.Domain.Entities;
-using LibraryManagement.Application.Interfaces.Repositories;
+using LibraryManagement.Domain.Enums;
+using LibraryManagement.Infrastructure.Data;
+using LibraryManagement.Shared;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,29 +16,66 @@ namespace LibraryManagement.Infrastructure.Repositories
 {
     public class BorrowingRepository: IBorrowingRepository
     {
-        public Task<Borrowing> GetByIdAsync(long borrowingId, CancellationToken cancellationToken = default)
+        private readonly LibraryManagementDbContext _context;
+
+        public BorrowingRepository(LibraryManagementDbContext context)
         {
-            throw new NotImplementedException();
+            _context = context;
         }
-        public Task<Borrowing> AddAsync(Borrowing borrowing, CancellationToken cancellationToken = default)
+        public async Task<Borrowing> GetByIdAsync(long borrowingId, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            return await _context.Borrowings
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.BorrowingId == borrowingId, cancellationToken);
         }
-        public Task<Borrowing> UpdateAsync(Borrowing borrowing, CancellationToken cancellationToken = default)
+        public async Task<Borrowing> AddAsync(Borrowing borrowing, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            await _context.Borrowings.AddAsync(borrowing, cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken);
+            return borrowing;
         }
-        public Task<bool> DeleteAsync(Borrowing borrowing, CancellationToken cancellationToken = default)
+        public async Task<Borrowing> UpdateAsync(Borrowing borrowing, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            _context.Borrowings.Update(borrowing);
+            await _context.SaveChangesAsync(cancellationToken);
+            return borrowing;
         }
-        public Task<ICollection<Borrowing>> GetAllAsync(CancellationToken cancellationToken = default)
+        public async Task<Borrowing> DeleteAsync(Borrowing borrowing, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            _context.Borrowings.Remove(borrowing);
+            await _context.SaveChangesAsync();
+            return borrowing;
         }
-        public Task<Borrowing> FindAsync(long borrowingId, BorrowingSearchArgs args, CancellationToken cancellationToken = default)
+        public async Task<ICollection<Borrowing>> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            return await _context.Borrowings.ToListAsync(cancellationToken);
+        }
+        public async Task<PagedResult<Borrowing>> FindAsync(BorrowingSearchArgs borrowingSearchArgs, CancellationToken cancellationToken = default)
+        {
+            var query = _context.Borrowings
+                .Include(x => x.Book)
+                .AsNoTracking()
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(borrowingSearchArgs.SearchTerm))
+            {
+                var searchTerm = borrowingSearchArgs.SearchTerm.ToLower();
+                query = query.Where(x =>
+                    EF.Functions.Like(x.Status.ToString(), $"%{searchTerm}%"));
+            }
+
+            if (borrowingSearchArgs.IsActive.HasValue)
+            {
+                query = query.Where(x => x.Status.ToString() == borrowingSearchArgs.IsActive.Value.ToString());
+            }
+
+            var totalCount = await query.CountAsync(cancellationToken);
+            var items = await query
+                .Skip((borrowingSearchArgs.PageNumber - 1) * borrowingSearchArgs.PageSize)
+                .Take(borrowingSearchArgs.PageSize)
+                .ToListAsync(cancellationToken);
+
+            return PagedResult<Borrowing>.Create(items, totalCount, borrowingSearchArgs.PageNumber, borrowingSearchArgs.PageSize);
         }
     }
 }

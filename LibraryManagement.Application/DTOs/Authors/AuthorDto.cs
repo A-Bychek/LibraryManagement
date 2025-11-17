@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace LibraryManagement.Application.DTOs.Author
+namespace LibraryManagement.Application.DTOs.Authors
 {
     public class AuthorDto
     {
