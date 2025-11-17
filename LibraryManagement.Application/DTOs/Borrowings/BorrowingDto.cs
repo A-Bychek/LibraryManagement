@@ -1,4 +1,4 @@
-﻿namespace LibraryManagement.Application.DTOs.Borrowing
+﻿namespace LibraryManagement.Application.DTOs.Borrowings
 {
     public class BorrowingDto
     {

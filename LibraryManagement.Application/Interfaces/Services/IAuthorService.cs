@@ -1,5 +1,5 @@
 ﻿using LibraryManagement.Application.Commands.Author;
-using LibraryManagement.Application.DTOs.Author;
+using LibraryManagement.Application.DTOs.Authors;
 using LibraryManagement.Application.QueryModels.Authors;
 using LibraryManagement.Shared;
 using System;

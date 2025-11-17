@@ -12,13 +12,17 @@
 
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="15.1.0" />
-    <PackageReference Include="Microsoft.ServiceFabric.Actors" Version="8.3.365" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.22.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\LibraryManagement.Domain\LibraryManagement.Domain.csproj" />
     <ProjectReference Include="..\LibraryManagement.Shared\LibraryManagement.Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Validation\Borrowings\" />
+    <Folder Include="Validation\Categories\" />
   </ItemGroup>
 
 </Project>

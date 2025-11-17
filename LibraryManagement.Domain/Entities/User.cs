@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 
 namespace LibraryManagement.Domain.Entities
 {
-    internal class User
+    public class User
     {
+        public long UserId;    
+        public Borrowing Borrowing {  get; set; }
     }
 }

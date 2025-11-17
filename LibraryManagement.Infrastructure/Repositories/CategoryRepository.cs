@@ -1,7 +1,11 @@
 ﻿using LibraryManagement.Application.DTOs;
+using LibraryManagement.Application.Interfaces.Repositories;
+using LibraryManagement.Application.QueryModels.Borrowings;
 using LibraryManagement.Application.QueryModels.Categories;
 using LibraryManagement.Domain.Entities;
-using LibraryManagement.Application.Interfaces.Repositories;
+using LibraryManagement.Infrastructure.Data;
+using LibraryManagement.Shared;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,29 +16,72 @@ namespace LibraryManagement.Infrastructure.Repositories
 {
     public class CategoryRepository: ICategoryRepository
     {
-        public Task<Category> GetByIdAsync(long categoryId, CancellationToken cancellationToken = default)
+        private readonly LibraryManagementDbContext _context;
+
+        public CategoryRepository(LibraryManagementDbContext context)
         {
-            throw new NotImplementedException();
+            _context = context;
         }
-        public Task<Category> AddAsync(Category category, CancellationToken cancellationToken = default)
+        public async Task<Category> GetByIdAsync(long categoryId, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            return await _context.Categories
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.CategoryId == categoryId, cancellationToken);
         }
-        public Task<Category> UpdateAsync(Category category, CancellationToken cancellationToken = default)
+        public async Task<Category> AddAsync(Category category, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            await _context.Categories.AddAsync(category, cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken);
+            return category;
         }
-        public Task<bool> DeleteAsync(Category category, CancellationToken cancellationToken = default)
+        public async Task<Category> UpdateAsync(Category category, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            _context.Categories.Update(category);
+            await _context.SaveChangesAsync(cancellationToken);
+            return category;
         }
-        public Task<ICollection<Category>> GetAllAsync(CancellationToken cancellationToken = default)
+        public async Task<Category> DeleteAsync(Category category, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            _context.Categories.Remove(category);
+            await _context.SaveChangesAsync();
+            return category;
         }
-        public Task<Category> FindAsync(long categoryId, CategorySearchArgs args, CancellationToken cancellationToken = default)
+        public async Task<ICollection<Category>> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            return await _context.Categories.ToListAsync(cancellationToken);
+        }
+        public async Task<List<Category>> FindAsync(CategorySearchArgs categorySearchArgs, CancellationToken cancellationToken = default)
+        {
+            var query = _context.Categories
+                .Include(c => c.ParentCategory)
+                .Include(c => c.Books)
+                .AsNoTracking()
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(categorySearchArgs.SearchTerm))
+            {
+                var searchTerm = categorySearchArgs.SearchTerm.ToLower();
+                query = query.Where(c =>
+                    EF.Functions.Like(c.Name, $"%{searchTerm}%") ||
+                    EF.Functions.Like(c.Description, $"%{searchTerm}%"));
+            }
+
+            if (categorySearchArgs.ParentCategoryId.HasValue)
+            {
+                query = query.Where(c => c.ParentCategoryId == categorySearchArgs.ParentCategoryId.Value);
+            }
+
+            if (categorySearchArgs.IsActive.HasValue)
+            {
+                query = query.Where(c => c.IsActive == categorySearchArgs.IsActive.Value);
+            }
+
+            List<Category> result = await query
+                .OrderBy(c => c.SortOrder)
+                .ThenBy(c => c.Name)
+                .ToListAsync(cancellationToken);
+
+            return result;
         }
     }
 }

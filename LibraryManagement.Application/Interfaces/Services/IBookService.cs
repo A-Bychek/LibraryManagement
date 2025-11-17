@@ -1,5 +1,5 @@
 ﻿using LibraryManagement.Application.Commands.Book;
-using LibraryManagement.Application.DTOs.Book;
+using LibraryManagement.Application.DTOs.Books;
 using LibraryManagement.Application.QueryModels.Books;
 using LibraryManagement.Domain.Enums;
 using LibraryManagement.Shared;

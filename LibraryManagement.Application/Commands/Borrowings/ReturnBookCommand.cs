@@ -2,6 +2,6 @@
 {
     public class ReturnBookCommand
     {
-        public long? BorrowingId { get; set; }
+        public long BorrowingId { get; set; }
     }
 }

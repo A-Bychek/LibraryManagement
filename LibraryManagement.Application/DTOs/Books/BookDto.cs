@@ -1,4 +1,4 @@
-﻿namespace LibraryManagement.Application.DTOs.Book
+﻿namespace LibraryManagement.Application.DTOs.Books
 {
     public class BookDto
     {

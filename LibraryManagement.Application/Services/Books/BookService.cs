@@ -1,34 +1,32 @@
 ﻿using AutoMapper;
-using LibraryManagement.Application.Commands.Author;
 using LibraryManagement.Application.Commands.Book;
-using LibraryManagement.Application.DTOs.Author;
-using LibraryManagement.Application.DTOs.Book;
+using LibraryManagement.Application.DTOs.Books;
 using LibraryManagement.Application.Interfaces.Repositories;
 using LibraryManagement.Application.Interfaces.Services;
-using LibraryManagement.Application.QueryModels.Authors;
 using LibraryManagement.Application.QueryModels.Books;
 using LibraryManagement.Domain.Entities;
 using LibraryManagement.Domain.Enums;
 using LibraryManagement.Shared;
-namespace LibraryManagement.Application.Services
+
+namespace LibraryManagement.Application.Services.Books
 {
     public class BookService : IBookService
     {
-        private IBookRepository _context { get; set; } = null!;
+        private IBookRepository _bookRepository { get; set; } = null!;
         private IMapper _mapper { get; set; } = null!;
-        public BookService(IBookRepository context, IMapper mapper)
+        public BookService(IBookRepository bookRepository, IMapper mapper)
         {
-            _context = context;
+            _bookRepository = bookRepository;
             _mapper = mapper;
         }
         public async Task<BookDto> GetBookAsync(long bookId, CancellationToken cancellationToken)
         {
-            var book = await _context.GetByIdAsync(bookId, cancellationToken);
+            var book = await _bookRepository.GetByIdAsync(bookId, cancellationToken);
             return _mapper.Map<BookDto>(book);
         }
         public async Task<PagedResult<BookDto>> GetBooksAsync(BookSearchArgs bookSearchArgs, CancellationToken cancellationToken)
         {
-            var books = await _context.FindAsync(bookSearchArgs, cancellationToken);
+            var books = await _bookRepository.FindAsync(bookSearchArgs, cancellationToken);
 
             List<BookDto> mappedBooks = new List<BookDto>();
             foreach (var book in books)
@@ -52,26 +50,26 @@ namespace LibraryManagement.Application.Services
                 PublishedDate = Convert.ToDateTime(createBookCommand.PublishedDate),
                 PageCount = createBookCommand.PageCount
             };
-            await _context.AddAsync(book, cancellationToken);
+            await _bookRepository.AddAsync(book, cancellationToken);
             return _mapper.Map<BookDto>(book);
         }
 
         public async Task<BookDto> UpdateBookAsync(UpdateBookCommand updateBookCommand, CancellationToken cancellationToken)
         {
-            var book = await _context.GetByIdAsync(updateBookCommand.BookId, cancellationToken) ?? throw new Exception($"Can't find a {updateBookCommand.BookId} book!");
+            var book = await _bookRepository.GetByIdAsync(updateBookCommand.BookId, cancellationToken) ?? throw new Exception($"Can't find a {updateBookCommand.BookId} book!");
             book.Title = updateBookCommand.Title ?? book.Title;
             book.Description = updateBookCommand.Description ?? book.Description;
             book.CategoryId = updateBookCommand.CategoryId ?? book.CategoryId;
             book.PublishedDate = updateBookCommand.PublishedDate is not null ? Convert.ToDateTime(updateBookCommand.PublishedDate) : book.PublishedDate;
             book.PageCount = updateBookCommand.PageCount ?? book.PageCount;
 
-            await _context.UpdateAsync(book, cancellationToken);
+            await _bookRepository.UpdateAsync(book, cancellationToken);
             return _mapper.Map<BookDto>(book);
         }
         public async Task<BookDto> DeleteBookAsync(long bookId, CancellationToken cancellationToken)
         {
-            var book = await _context.GetByIdAsync(bookId, cancellationToken);
-            await _context.DeleteAsync(book, cancellationToken);
+            var book = await _bookRepository.GetByIdAsync(bookId, cancellationToken);
+            await _bookRepository.DeleteAsync(book, cancellationToken);
             return _mapper.Map<BookDto>(book);
         }
         public async Task<BorrowingStatus> CheckAvailabilityAsync(long bookId, CancellationToken cancellationToken)

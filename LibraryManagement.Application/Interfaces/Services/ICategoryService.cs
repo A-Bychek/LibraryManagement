@@ -1,5 +1,5 @@
 ﻿using LibraryManagement.Application.Commands.Category;
-using LibraryManagement.Application.DTOs.Category;
+using LibraryManagement.Application.DTOs.Categories;
 using LibraryManagement.Application.QueryModels.Categories;
 using System;
 using System.Collections.Generic;
