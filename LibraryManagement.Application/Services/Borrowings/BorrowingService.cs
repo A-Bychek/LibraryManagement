@@ -6,6 +6,7 @@ using LibraryManagement.Application.Interfaces.Repositories;
 using LibraryManagement.Application.Interfaces.Services;
 using LibraryManagement.Domain.Entities;
 using LibraryManagement.Domain.Enums;
+using LibraryManagement.Shared.Exceptions;
 
 
 namespace LibraryManagement.Application.Services.Borrowings
@@ -17,46 +18,58 @@ namespace LibraryManagement.Application.Services.Borrowings
         private IBorrowingRepository _borrowingRepository;
         private IBookRepository _bookRepository;
         private IMapper _mapper;
+        private IValidator<BorrowBookCommand> _borrowBookCommandValidator;
+        private IValidator<ReturnBookCommand> _returnBookCommandValidator;
 
-        public BorrowingService(IBorrowingRepository borrowingRepository, IBookRepository bookRepository, IMapper mapper)
+        public BorrowingService(
+            IBorrowingRepository borrowingRepository,
+            IBookRepository bookRepository,
+            IMapper mapper,
+            IValidator<BorrowBookCommand> borrowBookCommandValidator,
+            IValidator<ReturnBookCommand> returnBookCommandValidator)
         {
             _borrowingRepository = borrowingRepository;
             _bookRepository = bookRepository;
             _mapper = mapper;
+            _borrowBookCommandValidator = borrowBookCommandValidator;
+            _returnBookCommandValidator = returnBookCommandValidator;
         }
         public async Task<BorrowingDto> BorrowBookAsync(BorrowBookCommand borrowBookCommand, CancellationToken cancellationToken)
-        { 
-        Book book = await _bookRepository.GetByIdAsync(borrowBookCommand.BookId, cancellationToken);
-
-        if (!book.IsAvailable)
         {
-            throw new Exception($"Can't borrow the {book.Title} book");
-        }
+            await _borrowBookCommandValidator.ValidateAndThrowAsync(borrowBookCommand, cancellationToken);
 
-        DateTime borrowDate = DateTime.UtcNow;
-        DateTime dueDate = borrowDate.AddDays(borrowBookCommand.DaysToReturn <= 0 ? 14 : borrowBookCommand.DaysToReturn);
+            Book book = await _bookRepository.GetByIdAsync(borrowBookCommand.BookId, cancellationToken);
 
-        var borrowing = new Borrowing(
-            borrowBookCommand.BookId, 
-            borrowBookCommand.UserId,   
-            borrowDate,
-            dueDate, 
-            null, 
-            BorrowingStatus.Active
-            );
+            if (!book.IsAvailable)
+            {
+                throw new NotAvailableException($"Can't borrow the {book.Title} book");
+            }
 
-        book.IsAvailable = false;
+            DateTime borrowDate = DateTime.UtcNow;
+            DateTime dueDate = borrowDate.AddDays(borrowBookCommand.DaysToReturn <= 0 ? 14 : borrowBookCommand.DaysToReturn);
 
-        await _borrowingRepository.AddAsync(borrowing, cancellationToken);
-        await _bookRepository.UpdateAsync(book, cancellationToken);
+            var borrowing = new Borrowing(
+                borrowBookCommand.BookId, 
+                borrowBookCommand.UserId,   
+                borrowDate,
+                dueDate, 
+                null, 
+                BorrowingStatus.Active
+                );
 
-        return _mapper.Map<Borrowing, BorrowingDto>(borrowing);
+            book.IsAvailable = false;
+
+            await _borrowingRepository.AddAsync(borrowing, cancellationToken);
+            await _bookRepository.UpdateAsync(book, cancellationToken);
+
+            return _mapper.Map<Borrowing, BorrowingDto>(borrowing);
         }
         public async Task<BorrowingDto> ReturnBookAsync(ReturnBookCommand returnBookCommand, CancellationToken cancellationToken)
         {
+            await _returnBookCommandValidator.ValidateAndThrowAsync(returnBookCommand, cancellationToken);
 
             var borrowing = await _borrowingRepository.GetByIdAsync(returnBookCommand.BorrowingId, cancellationToken)
-                ?? throw new Exception($"Can't find the {returnBookCommand.BorrowingId} boorowing entity!");
+                ?? throw new NotFoundException($"Can't find the {returnBookCommand.BorrowingId} boorowing entity!");
 
             if (borrowing.Status == BorrowingStatus.Active)
             {
@@ -64,7 +77,7 @@ namespace LibraryManagement.Application.Services.Borrowings
                 borrowing.ReturnDate = DateTime.UtcNow;
 
                 var book = await _bookRepository.GetByIdAsync(borrowing.BookId, cancellationToken)
-                       ?? throw new Exception($"Can't find the {borrowing.BookId} book!");
+                       ?? throw new NotFoundException($"Can't find the {borrowing.BookId} book!");
                 book.IsAvailable = true;
 
                 await _borrowingRepository.UpdateAsync(borrowing, cancellationToken);
