@@ -1,11 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
-using LibraryManagement.Domain.Enums;
+﻿using LibraryManagement.Domain.Enums;
 
 namespace LibraryManagement.Domain.Entities
 {
     public class Borrowing
     {
-
         public Borrowing(long bookId, long userId, DateTime borrowDate, DateTime dueDate, DateTime? returnDate, BorrowingStatus status)
         {
             BookId = bookId;
@@ -15,7 +13,7 @@ namespace LibraryManagement.Domain.Entities
             ReturnDate = returnDate;
             Status = status;
         }
-
+        private Borrowing() { }
         public int BorrowingId { get; set; }
         public long BookId { get; set; }
         public Book Book { get; set; } = null!;

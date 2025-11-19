@@ -4,9 +4,9 @@ using System.Globalization;
 
 namespace LibraryManagement.Application.Validation.Books
 {
-    public class CreateBookCommandValidation: AbstractValidator<CreateBookCommand>
+    public class CreateBookCommandValidator : AbstractValidator<CreateBookCommand>
     {
-        CreateBookCommandValidation()
+        public CreateBookCommandValidator()
         {
             RuleFor(x => x.Title)
                 .NotEmpty().WithMessage("Book entity didn't created. Title cannot be empty.").WithErrorCode("422")

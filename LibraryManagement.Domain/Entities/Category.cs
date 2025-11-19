@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace LibraryManagement.Domain.Entities
+﻿namespace LibraryManagement.Domain.Entities
 {
     public class Category
     {
@@ -17,7 +10,7 @@ namespace LibraryManagement.Domain.Entities
             SortOrder = sortOrder;
             IsActive = isActive;
         }
-
+        private Category() { }
         public long CategoryId { get; set; }
         public string Name { get; set; } = null!;
         public string? Description { get; set; }

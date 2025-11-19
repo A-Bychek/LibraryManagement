@@ -1,6 +1,5 @@
 ﻿using LibraryManagement.Application.QueryModels.Categories;
 using LibraryManagement.Domain.Entities;
-using LibraryManagement.Shared;
 
 namespace LibraryManagement.Application.Interfaces.Repositories
 {

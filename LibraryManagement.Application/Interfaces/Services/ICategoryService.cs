@@ -1,11 +1,6 @@
 ﻿using LibraryManagement.Application.Commands.Category;
 using LibraryManagement.Application.DTOs.Categories;
 using LibraryManagement.Application.QueryModels.Categories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LibraryManagement.Application.Interfaces.Services
 {

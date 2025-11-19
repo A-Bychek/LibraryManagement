@@ -1,22 +1,58 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <InvariantGlobalization>true</InvariantGlobalization>
-    <PublishAot>true</PublishAot>
+    <PublishAot>false</PublishAot>
     <UserSecretsId>cfb8013e-aebc-4164-a068-953011fc67eb</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
   </PropertyGroup>
 
   <ItemGroup>
-    <Protobuf Include="Protos\greet.proto" GrpcServices="Server" />
+    <Protobuf Include="..\LibraryManagement.Contract\Proto\author.proto" GrpcServices="Server" />
+	<Protobuf Include="..\LibraryManagement.Contract\Proto\author.proto" GrpcServices="Server" />
+	<Protobuf Include="..\LibraryManagement.Contract\Proto\book.proto" GrpcServices="Server" />
+	<Protobuf Include="..\LibraryManagement.Contract\Proto\borrowing.proto" GrpcServices="Server" />
+	<Protobuf Include="..\LibraryManagement.Contract\Proto\category.proto" GrpcServices="Server" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Google.Protobuf" Version="3.33.1" />
     <PackageReference Include="Grpc.AspNetCore" Version="2.57.0" />
+	<PackageReference Include="Grpc.Tools" Version="2.76.0">
+	  <PrivateAssets>all</PrivateAssets>
+	  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+	</PackageReference>
+	<PackageReference Include="Microsoft.Data.Sqlite.Core" Version="10.0.0" />
+	<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.22" />
+	<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.Core" Version="8.0.22" />
+	<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.Design" Version="1.1.6" />
+	<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.22">
+	  <PrivateAssets>all</PrivateAssets>
+	  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+	</PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.22.1" />
+    <PackageReference Include="Npgsql" Version="9.0.4" />
+    <PackageReference Include="Serilog" Version="4.3.0" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
+    <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
+    <PackageReference Include="SimpleInjector" Version="5.5.0" />
+    <PackageReference Include="SimpleInjector.Integration.AspNetCore" Version="5.5.0" />
+    <PackageReference Include="SimpleInjector.Integration.ServiceCollection" Version="5.5.0" />
+    <PackageReference Include="SQLite" Version="3.13.0" />
+    <PackageReference Include="SQLitePCLRaw.core" Version="3.0.2" />
+    <PackageReference Include="SQLitePCLRaw.provider.e_sqlite3" Version="3.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LibraryManagement.Application\LibraryManagement.Application.csproj" />
+    <ProjectReference Include="..\LibraryManagement.Contract\LibraryManagement.Contract.csproj" />
+    <ProjectReference Include="..\LibraryManagement.Domain\LibraryManagement.Domain.csproj" />
+    <ProjectReference Include="..\LibraryManagement.Infrastructure\LibraryManagement.Infrastructure.csproj" />
+    <ProjectReference Include="..\LibraryManagement.Integration.Tests\LibraryManagement.Integration.Tests.csproj" />
+    <ProjectReference Include="..\LibraryManagement.Shared\LibraryManagement.Shared.csproj" />
   </ItemGroup>
 
 </Project>

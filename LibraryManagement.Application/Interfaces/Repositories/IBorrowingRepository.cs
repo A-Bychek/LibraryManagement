@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using LibraryManagement.Application.QueryModels.Borrowings;
+﻿using LibraryManagement.Application.QueryModels.Borrowings;
 using LibraryManagement.Domain.Entities;
 using LibraryManagement.Shared;
 

@@ -4,9 +4,9 @@ using System.Globalization;
 
 namespace LibraryManagement.Application.Validation.Authors
 {
-    public class UpdateAuthorCommandValidation: AbstractValidator<UpdateAuthorCommand>
+    public class UpdateAuthorCommandValidator: AbstractValidator<UpdateAuthorCommand>
     {
-        public UpdateAuthorCommandValidation()
+        public UpdateAuthorCommandValidator()
         {
             RuleFor(x => x.FirstName)
                 .MinimumLength(3).WithMessage("Author entity didn't updated. First name must be at least 3 characters long.").WithErrorCode("422")

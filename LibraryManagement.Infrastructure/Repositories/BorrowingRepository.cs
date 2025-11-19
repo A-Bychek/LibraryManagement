@@ -1,16 +1,9 @@
 ﻿using LibraryManagement.Application.Interfaces.Repositories;
-using LibraryManagement.Application.QueryModels.Books;
 using LibraryManagement.Application.QueryModels.Borrowings;
 using LibraryManagement.Domain.Entities;
-using LibraryManagement.Domain.Enums;
 using LibraryManagement.Infrastructure.Data;
 using LibraryManagement.Shared;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LibraryManagement.Infrastructure.Repositories
 {
