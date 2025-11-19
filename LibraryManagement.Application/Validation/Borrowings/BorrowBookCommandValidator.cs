@@ -3,9 +3,9 @@ using LibraryManagement.Application.Commands.Borrowing;
 
 namespace LibraryManagement.Application.Validation.Borrowings
 {
-    public class BorrowBookCommandValidation: AbstractValidator<BorrowBookCommand>
+    public class BorrowBookCommandValidator : AbstractValidator<BorrowBookCommand>
     {
-        public BorrowBookCommandValidation() 
+        public BorrowBookCommandValidator()
         {
             RuleFor(x => x.BookId)
                 .NotNull().WithMessage("Book isn't borrowed. Book ID cannot be null.").WithErrorCode("422")

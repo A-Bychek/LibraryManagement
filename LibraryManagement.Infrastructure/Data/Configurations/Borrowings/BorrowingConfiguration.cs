@@ -1,5 +1,4 @@
 using LibraryManagement.Domain.Entities;
-using LibraryManagement.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

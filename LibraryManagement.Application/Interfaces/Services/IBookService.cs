@@ -3,11 +3,6 @@ using LibraryManagement.Application.DTOs.Books;
 using LibraryManagement.Application.QueryModels.Books;
 using LibraryManagement.Domain.Enums;
 using LibraryManagement.Shared;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LibraryManagement.Application.Interfaces.Services
 {

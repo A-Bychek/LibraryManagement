@@ -11,6 +11,8 @@ namespace LibraryManagement.Infrastructure.Data
 {
     public class LibraryManagementDbContext : DbContext
     {
+        public LibraryManagementDbContext(DbContextOptions<LibraryManagementDbContext> options)
+            : base(options) { }
 
         public DbSet<Book> Books { get; set; } = null!;
 
@@ -20,7 +22,8 @@ namespace LibraryManagement.Infrastructure.Data
 
         public DbSet<Borrowing> Borrowings { get; set; } = null!;
 
-        [UnconditionalSuppressMessage("Trimming", "IL2026:Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code", Justification = "<Pending>")]
+        public DbSet<User> Users { get; set; } = null!;
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             _ = modelBuilder.ApplyConfigurationsFromAssembly(typeof(LibraryManagementDbContext).Assembly);

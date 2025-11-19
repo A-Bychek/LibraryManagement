@@ -3,9 +3,9 @@ using LibraryManagement.Application.Commands.Category;
 
 namespace LibraryManagement.Application.Validation.Categories
 {
-    public class CreateCategoryCommandValidation: AbstractValidator<CreateCategoryCommand>
+    public class CreateCategoryCommandValidator: AbstractValidator<CreateCategoryCommand>
     {
-        CreateCategoryCommandValidation() 
+        public CreateCategoryCommandValidator()
         {
             RuleFor(x => x.Name)
                 .NotEmpty().WithMessage("Category isn't created. Name cannot be empty.").WithErrorCode("422")

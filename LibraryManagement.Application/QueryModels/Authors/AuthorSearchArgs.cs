@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace LibraryManagement.Application.QueryModels.Authors
+﻿namespace LibraryManagement.Application.QueryModels.Authors
 {
     public class AuthorSearchArgs
     {

@@ -1,8 +1,8 @@
 using Grpc.Core;
 using LibraryManagement.Contract;
 
-namespace LibraryManagement.Contract.Services
-{
+namespace LibraryManagement.Contract.Services;
+/*{
     public class GreeterService : Greeter.GreeterBase
     {
         private readonly ILogger<GreeterService> _logger;
@@ -20,3 +20,4 @@ namespace LibraryManagement.Contract.Services
         }
     }
 }
+*/
