@@ -26,10 +26,12 @@
 	  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 	</PackageReference>
 	<PackageReference Include="Microsoft.Data.Sqlite.Core" Version="10.0.0" />
-	<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.22" />
-	<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.Core" Version="8.0.22" />
+	<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.11">
+	  <PrivateAssets>all</PrivateAssets>
+	  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+	</PackageReference>
 	<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.Design" Version="1.1.6" />
-	<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.22">
+	<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.0">
 	  <PrivateAssets>all</PrivateAssets>
 	  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 	</PackageReference>
@@ -51,7 +53,6 @@
     <ProjectReference Include="..\LibraryManagement.Contract\LibraryManagement.Contract.csproj" />
     <ProjectReference Include="..\LibraryManagement.Domain\LibraryManagement.Domain.csproj" />
     <ProjectReference Include="..\LibraryManagement.Infrastructure\LibraryManagement.Infrastructure.csproj" />
-    <ProjectReference Include="..\LibraryManagement.Integration.Tests\LibraryManagement.Integration.Tests.csproj" />
     <ProjectReference Include="..\LibraryManagement.Shared\LibraryManagement.Shared.csproj" />
   </ItemGroup>
 

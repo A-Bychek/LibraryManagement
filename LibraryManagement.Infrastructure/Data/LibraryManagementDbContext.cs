@@ -1,4 +1,8 @@
 ﻿using LibraryManagement.Domain.Entities;
+using LibraryManagement.Infrastructure.Data.Configurations.Authors;
+using LibraryManagement.Infrastructure.Data.Configurations.Books;
+using LibraryManagement.Infrastructure.Data.Configurations.Borrowings;
+using LibraryManagement.Infrastructure.Data.Configurations.Categories;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -30,5 +34,11 @@ namespace LibraryManagement.Infrastructure.Data
 
             base.OnModelCreating(modelBuilder);
         }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.UseSqlite("Data Source=testdb.db");
+        }
+        
     }
 }

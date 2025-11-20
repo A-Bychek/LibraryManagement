@@ -59,7 +59,7 @@ namespace LibraryManagement.Application.Services.Books
                 Description = createBookCommand.Description,
                 AuthorId = createBookCommand.AuthorId,
                 CategoryId = createBookCommand.CategoryId,
-                PublishedDate = Convert.ToDateTime(createBookCommand.PublishedDate),
+                PublishedDate = DateTime.Parse(createBookCommand.PublishedDate),
                 PageCount = createBookCommand.PageCount
             };
             await _bookRepository.AddAsync(book, cancellationToken);
@@ -73,7 +73,7 @@ namespace LibraryManagement.Application.Services.Books
             book.Title = updateBookCommand.Title ?? book.Title;
             book.Description = updateBookCommand.Description ?? book.Description;
             book.CategoryId = updateBookCommand.CategoryId ?? book.CategoryId;
-            book.PublishedDate = updateBookCommand.PublishedDate is not null ? Convert.ToDateTime(updateBookCommand.PublishedDate) : book.PublishedDate;
+            book.PublishedDate = updateBookCommand.PublishedDate is not null ? DateTime.Parse(updateBookCommand.PublishedDate) : book.PublishedDate;
             book.PageCount = updateBookCommand.PageCount ?? book.PageCount;
 
             await _bookRepository.UpdateAsync(book, cancellationToken);

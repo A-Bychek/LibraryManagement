@@ -1,13 +1,13 @@
 ﻿using AutoMapper;
 using Grpc.Core;
 using LibraryManagement.Application.Commands.Author;
+using LibraryManagement.Application.DTOs.Authors;
 using LibraryManagement.Application.Interfaces.Services;
 using LibraryManagement.Application.QueryModels.Authors;
-using LibraryManagement.Shared.Exceptions;
-using System.ComponentModel.DataAnnotations;
 using LibraryManagement.Contract.Authors;
+using LibraryManagement.Shared.Exceptions;
 using Serilog;
-using LibraryManagement.Application.DTOs.Authors;
+using System.ComponentModel.DataAnnotations;
 
 
 namespace LibraryManagement.Api.Services
@@ -57,6 +57,9 @@ namespace LibraryManagement.Api.Services
             {
                 var createAuthorCommand = _mapper.Map<CreateAuthorCommand>(request);
                 var author = await _authorService.CreateAuthorAsync(createAuthorCommand, context.CancellationToken);
+                _logger.Information($"Author entity has been created: ID: {author.AuthorId}," +
+                    $"Name: {author.FirstName} {author.LastName}, Bio: {author.Biography}, Date of birth: {author.DateOfBirth}," +
+                    $"isActive: {author.IsActive}");
                 return _mapper.Map<AuthorResponse>(author);
             }
             catch (ValidationException exc)
@@ -66,7 +69,7 @@ namespace LibraryManagement.Api.Services
             }
             catch (Exception exc)
             {
-                _logger.Error($"Unknown issue: {exc.Message}");
+                _logger.Error($"Unknown issue: {exc.Message}, {exc.InnerException}, {exc.GetBaseException}");
                 throw new RpcException(new Status(StatusCode.Unknown, "Unknown issue."));
             }
         }
@@ -78,11 +81,8 @@ namespace LibraryManagement.Api.Services
                 var searchAuthorCommand = _mapper.Map<AuthorSearchArgs>(request);
 
                 var authors = await _authorService.GetAuthorsAsync(searchAuthorCommand, context.CancellationToken);
-                var mappedAuthors = new List<AuthorResponse>();
-                foreach (var author in authors)
-                {
-                    mappedAuthors.Append(_mapper.Map<AuthorResponse>(author));
-                }
+
+                var mappedAuthors = authors.Items.Select(_mapper.Map<AuthorResponse>);
 
                 var authorResponse = new AuthorListResponse
                 {
@@ -92,7 +92,7 @@ namespace LibraryManagement.Api.Services
                 };
 
                 authorResponse.Authors.AddRange(mappedAuthors);
-
+                _logger.Information($"{authors.TotalCount} authors have been found.");
                 return authorResponse;
             }
             catch (ValidationException exc)
@@ -113,6 +113,9 @@ namespace LibraryManagement.Api.Services
             {
                 var updateAuthorCommand = _mapper.Map<UpdateAuthorCommand>(request);
                 var author = await _authorService.UpdateAuthorAsync(updateAuthorCommand, context.CancellationToken);
+                _logger.Information($"Author entity has been updated: ID: {author.AuthorId}," +
+                    $"Name: {author.FirstName} {author.LastName}, Bio: {author.Biography}, Date of birth: {author.DateOfBirth}, " +
+                    $"isActive: {author.IsActive}");
                 return _mapper.Map<AuthorResponse>(author);
             }
             catch (ValidationException exc)
