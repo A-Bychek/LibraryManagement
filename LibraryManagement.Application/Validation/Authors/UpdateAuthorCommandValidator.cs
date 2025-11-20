@@ -9,15 +9,16 @@ namespace LibraryManagement.Application.Validation.Authors
         public UpdateAuthorCommandValidator()
         {
             RuleFor(x => x.FirstName)
-                .MinimumLength(3).WithMessage("Author entity didn't updated. First name must be at least 3 characters long.").WithErrorCode("422")
-                .MaximumLength(200).WithMessage("Author entity didn't updated. First name cannot be more than 200 characters.").WithErrorCode("422")
+                .MinimumLength(3).When(x => !string.IsNullOrEmpty(x.FirstName)).WithMessage("Author entity didn't updated. First name must be at least 3 characters long.").WithErrorCode("422")
+                .MaximumLength(200).When(x => !string.IsNullOrEmpty(x.FirstName)).WithMessage("Author entity didn't updated. First name cannot be more than 200 characters.").WithErrorCode("422")
                 .NotEmpty().WithMessage("Author entity didn't updated. Fist name cannot be empty.").WithErrorCode("422");
+            
             RuleFor(x => x.LastName)
-                .MinimumLength(3).WithMessage("Author entity didn't updated. Last name must be at least 3 characters long.").WithErrorCode("422")
-                .MaximumLength(200).WithMessage("Author entity didn't updated. Last name cannot be more than 200 characters.").WithErrorCode("422");
+                .MinimumLength(3).When(x => !string.IsNullOrEmpty(x.LastName)).WithMessage("Author entity didn't updated. Last name must be at least 3 characters long.").WithErrorCode("422")
+                .MaximumLength(200).When(x => !string.IsNullOrEmpty(x.LastName)).WithMessage("Author entity didn't updated. Last name cannot be more than 200 characters.").WithErrorCode("422");
 
             RuleFor(x => x.Biography)
-                .MaximumLength(2000).WithMessage("Author entity didn't updated. Bioghraphy cannot be more than 2000 characters.").WithErrorCode("422");
+                .MaximumLength(2000).When(x => !string.IsNullOrEmpty(x.Biography)).WithMessage("Author entity didn't updated. Bioghraphy cannot be more than 2000 characters.").WithErrorCode("422");
 
             RuleFor(x => x.DateOfBirth)
                 .Must((dateOfBirth) =>

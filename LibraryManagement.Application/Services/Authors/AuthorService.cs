@@ -34,12 +34,7 @@ namespace LibraryManagement.Application.Services.Authors
         {
             var authors = await _authorRepository.FindAsync(authorSearchArgs, cancellationToken);
 
-            List<AuthorDto> mappedAuthors = new List<AuthorDto>();
-            foreach (var author in authors)
-            {
-                AuthorDto mappedAuthor = _mapper.Map<AuthorDto>(author);
-                mappedAuthors.Append(mappedAuthor);
-            }
+            var mappedAuthors = authors.Items.Select(_mapper.Map<AuthorDto>);
 
             return PagedResult<AuthorDto>.Create(mappedAuthors, authors.TotalCount, authors.PageNumber, authors.PageSize); // re-check this
         }
@@ -53,11 +48,10 @@ namespace LibraryManagement.Application.Services.Authors
             await _createAuthorCommandValidator.ValidateAndThrowAsync(createAuthorCommand, cancellationToken);
             var author = new Author()
             {
-
                 FirstName = createAuthorCommand.FirstName,
                 LastName = createAuthorCommand.LastName,
                 Biography = createAuthorCommand.Biography,
-                DateOfBirth = Convert.ToDateTime(createAuthorCommand.DateOfBirth)
+                DateOfBirth = DateTime.Parse(createAuthorCommand.DateOfBirth)
             };
             await _authorRepository.AddAsync(author, cancellationToken);
             return _mapper.Map<AuthorDto>(author);
@@ -66,10 +60,10 @@ namespace LibraryManagement.Application.Services.Authors
         {
             await _updateAuthorCommandValidator.ValidateAndThrowAsync (updateAuthorCommand, cancellationToken);
             var author = await _authorRepository.GetByIdAsync(updateAuthorCommand.AuthorId, cancellationToken) ?? throw new NotFoundException($"Can't find a {updateAuthorCommand.AuthorId} author!");
-            author.FirstName = updateAuthorCommand.FirstName ?? author.FirstName;
-            author.LastName = updateAuthorCommand.LastName ?? author.LastName;
-            author.DateOfBirth = updateAuthorCommand.DateOfBirth is not null ? Convert.ToDateTime(updateAuthorCommand.DateOfBirth) : author.DateOfBirth;
-            author.Biography = updateAuthorCommand.Biography ?? author.Biography;
+            author.FirstName = !string.IsNullOrEmpty(updateAuthorCommand.FirstName) ? updateAuthorCommand.FirstName : author.FirstName;
+            author.LastName = !string.IsNullOrEmpty(updateAuthorCommand.LastName) ? updateAuthorCommand.LastName: author.LastName;
+            author.DateOfBirth = !string.IsNullOrEmpty(updateAuthorCommand.DateOfBirth) ? DateTime.Parse(updateAuthorCommand.DateOfBirth) : author.DateOfBirth;
+            author.Biography = !string.IsNullOrEmpty(updateAuthorCommand.Biography) ? updateAuthorCommand.Biography : author.Biography;
             author.IsActive = updateAuthorCommand.IsActive ?? author.IsActive;
 
             await _authorRepository.UpdateAsync(author, cancellationToken);

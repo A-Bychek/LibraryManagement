@@ -2,9 +2,9 @@
 {
     public class CreateAuthorCommand
     {
-        public string? FirstName { get; set; }
-        public string? LastName { get; set; }
-        public string? Biography { get; set; }
-        public string? DateOfBirth { get; set; } // ISO 8601 format?
+        public string FirstName { get; set; } = null!;
+        public string LastName { get; set; } = null!;
+        public string Biography { get; set; } = null!;
+        public string DateOfBirth { get; set; } = null!; // ISO 8601 format?
     }
 }

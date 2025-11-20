@@ -57,11 +57,8 @@ namespace LibraryManagement.Infrastructure.Repositories
                 query = query.Where(x =>
                     EF.Functions.Like(x.FirstName, $"%{searchTerm}%") || EF.Functions.Like(x.LastName, $"%{searchTerm}%"));
             }
-
-            if (authorSearchArgs.IsActive.HasValue)
-            {
-                query = query.Where(x => x.IsActive == authorSearchArgs.IsActive.Value);
-            }
+            // TODO check the IsActive logic
+            query = query.Where(x => x.IsActive == authorSearchArgs.IsActive.Value);
 
             var totalCount = await query.CountAsync(cancellationToken);
 

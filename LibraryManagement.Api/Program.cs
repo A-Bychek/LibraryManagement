@@ -51,3 +51,6 @@ container.Verify();
 app.MapGet("/", () => $"Library Management Service is running - {DateTime.UtcNow.ToString("yyyy-MM-dd_HH-mm-ss")}");
 
 app.Run();
+
+Log.Information("The application has completed its work. Close the logger.");
+Log.CloseAndFlush();
