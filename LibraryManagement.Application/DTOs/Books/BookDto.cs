@@ -1,6 +1,4 @@
-﻿using LibraryManagement.Domain.Entities;
-
-namespace LibraryManagement.Application.DTOs.Books
+﻿namespace LibraryManagement.Application.DTOs.Books
 {
     public class BookDto
     {
@@ -9,11 +7,9 @@ namespace LibraryManagement.Application.DTOs.Books
         public string ISBN { get; set; }
         public string? Description { get; set; }
         public long AuthorId { get; set; } 
-        public Author Author { get; set; }
         public string AuthorName { get; set; } // FirstName + LastName?
-        public Category Category { get; set; }
         public long CategoryId { get; set; }
-        public string CategoryName { get; set; } // Category + Subcategory?
+        public string CategoryName { get; set; } // Category?
         public string PublishedDate { get; set; } // ISO 8601 format?
         public int? PageCount { get; set; }
         public bool? IsAvailable { get; set; }
