@@ -20,8 +20,6 @@ var container = new Container();
 
 container.Options.DefaultScopedLifestyle = new AsyncScopedLifestyle();
 
-container.Register(typeof(ILogger<>), typeof(Logger<>), Lifestyle.Singleton);
-
 builder.Services.AddSimpleInjector(container, options =>
 {
     options.AddAspNetCore();

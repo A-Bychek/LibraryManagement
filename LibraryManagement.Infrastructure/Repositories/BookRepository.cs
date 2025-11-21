@@ -4,6 +4,7 @@ using LibraryManagement.Domain.Entities;
 using LibraryManagement.Infrastructure.Data;
 using LibraryManagement.Shared;
 using Microsoft.EntityFrameworkCore;
+using LibraryManagement.Domain.Entities;
 
 namespace LibraryManagement.Infrastructure.Repositories
 {
@@ -17,9 +18,14 @@ namespace LibraryManagement.Infrastructure.Repositories
         }
         public async Task<Book> GetByIdAsync(long bookId, CancellationToken cancellationToken = default)
         {
-            return await _context.Books
+            var book = await _context
+                .Books
+                .Include(x => x.Author)
+                .Include(y => y.Category)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.BookId == bookId, cancellationToken);
+
+            return book;
         }
         public async Task<Book> AddAsync(Book book, CancellationToken cancellationToken = default)
         {

@@ -59,7 +59,7 @@ namespace LibraryManagement.Application.Services.Books
                 PageCount = createBookCommand.PageCount
             };
             await _bookRepository.AddAsync(book, cancellationToken);
-            return _mapper.Map<BookDto>(book);
+            return await GetBookAsync(book.BookId, cancellationToken);
         }
 
         public async Task<BookDto> UpdateBookAsync(UpdateBookCommand updateBookCommand, CancellationToken cancellationToken)
