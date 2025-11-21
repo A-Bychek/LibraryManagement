@@ -38,11 +38,13 @@ namespace LibraryManagement.Application.Services.Authors
 
             return PagedResult<AuthorDto>.Create(mappedAuthors, authors.TotalCount, authors.PageNumber, authors.PageSize); // re-check this
         }
+
         public async Task<AuthorDto> GetAuthorAsync(long authorId, CancellationToken cancellationToken)
         {
             var author = await _authorRepository.GetByIdAsync(authorId, cancellationToken) ?? throw new NotFoundException($"Can't find a {authorId} author"!);
             return _mapper.Map<AuthorDto>(author);
         }
+
         public async Task<AuthorDto> CreateAuthorAsync(CreateAuthorCommand createAuthorCommand, CancellationToken cancellationToken)
         {
             await _createAuthorCommandValidator.ValidateAndThrowAsync(createAuthorCommand, cancellationToken);
@@ -51,7 +53,7 @@ namespace LibraryManagement.Application.Services.Authors
                 FirstName = createAuthorCommand.FirstName,
                 LastName = createAuthorCommand.LastName,
                 Biography = createAuthorCommand.Biography,
-                DateOfBirth = DateTime.Parse(createAuthorCommand.DateOfBirth)
+                DateOfBirth = DateTime.Parse(createAuthorCommand.DateOfBirth) // to mapper
             };
             await _authorRepository.AddAsync(author, cancellationToken);
             return _mapper.Map<AuthorDto>(author);
