@@ -1,4 +1,5 @@
 ﻿using LibraryManagement.Application.QueryModels.Books;
+using LibraryManagement.Application.DTOs.Books;
 using LibraryManagement.Domain.Entities;
 using LibraryManagement.Shared;
 

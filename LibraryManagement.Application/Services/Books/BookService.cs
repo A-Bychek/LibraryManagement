@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using FluentValidation;
 using LibraryManagement.Application.Commands.Book;
+using LibraryManagement.Application.DTOs.Authors;
 using LibraryManagement.Application.DTOs.Books;
 using LibraryManagement.Application.Interfaces.Repositories;
 using LibraryManagement.Application.Interfaces.Services;
@@ -39,12 +40,7 @@ namespace LibraryManagement.Application.Services.Books
         {
             var books = await _bookRepository.FindAsync(bookSearchArgs, cancellationToken);
 
-            List<BookDto> mappedBooks = new List<BookDto>();
-            foreach (var book in books)
-            {
-                BookDto mappedBook = _mapper.Map<BookDto>(book);
-                mappedBooks.Append(mappedBook);
-            }
+            var mappedBooks = books.Items.Select(_mapper.Map<BookDto>);
 
             return PagedResult<BookDto>.Create(mappedBooks, books.TotalCount, books.PageNumber, books.PageSize); // re-check this
 

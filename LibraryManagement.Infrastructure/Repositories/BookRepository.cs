@@ -33,12 +33,14 @@ namespace LibraryManagement.Infrastructure.Repositories
             await _context.SaveChangesAsync(cancellationToken);
             return book;
         }
+
         public async Task<Book> DeleteAsync(Book book, CancellationToken cancellationToken = default)
         {
             _context.Books.Remove(book);
             await _context.SaveChangesAsync();
             return book;
         }
+
         public async Task<ICollection<Book>> GetAllAsync(CancellationToken cancellationToken = default)
         {
             return await _context.Books.ToListAsync(cancellationToken);

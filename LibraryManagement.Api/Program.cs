@@ -35,8 +35,10 @@ container.AddAutoMapper();
 container.AddApplication();
 container.AddInfrastructure(options);
 container.Register<GrpcAuthorService>(Lifestyle.Scoped);
+container.Register<GrpcBookService>(Lifestyle.Scoped);
 
 builder.Services.AddScoped<GrpcAuthorService>(sp => container.GetInstance<GrpcAuthorService>());
+builder.Services.AddScoped<GrpcBookService>(sp => container.GetInstance<GrpcBookService>());
 
 builder.Services.AddGrpc();
 
@@ -45,6 +47,7 @@ var app = builder.Build();
 app.Services.UseSimpleInjector(container);
 
 app.MapGrpcService<GrpcAuthorService>();
+app.MapGrpcService<GrpcBookService>();
 
 container.Verify();
 

@@ -9,6 +9,8 @@ using LibraryManagement.Contract.Authors;
 using LibraryManagement.Shared.Exceptions;
 using Microsoft.Extensions.Logging;
 using Moq;
+
+namespace LibraryManagement.Integration.Tests.Api;
 public class GrpcAuthorServiceTests
 {
     private readonly Mock<IAuthorService> _authorServiceMock;
@@ -32,7 +34,7 @@ public class GrpcAuthorServiceTests
     }
 
     [Fact]
-    public async Task GetAuthor_IfAuthorExists()
+    public async Task GetAuthor_IfAuthorExists_ShouldReturnEntity()
     {
         AuthorDto author = new AuthorDto
         {
@@ -44,7 +46,7 @@ public class GrpcAuthorServiceTests
             IsActive = true,
             BookCount = 1
 };
-        var context = Mock.Of<ServerCallContext>();
+        ServerCallContext context = Mock.Of<ServerCallContext>();
 
         _authorServiceMock.Setup(s =>
             s.GetAuthorAsync(1, context.CancellationToken))
@@ -55,7 +57,7 @@ public class GrpcAuthorServiceTests
             AuthorId = 1
         };
 
-        var result = await _grpcAuthorService.GetAuthor(request, context);
+        AuthorGetResponse result = await _grpcAuthorService.GetAuthor(request, context);
         Assert.Equal(author.FirstName, result.Author.FirstName);
 
         _authorServiceMock.Verify(s =>
@@ -64,7 +66,7 @@ public class GrpcAuthorServiceTests
     }
 
     [Fact]
-    public async Task GetAuthor_IfAuthorDoesntExist()
+    public async Task GetAuthor_IfAuthorDoesntExist_ShouldThrowException()
     {
         AuthorDto author = new AuthorDto
         {
@@ -76,7 +78,7 @@ public class GrpcAuthorServiceTests
             IsActive = true,
             BookCount = 1
         };
-        var context = Mock.Of<ServerCallContext>();
+        ServerCallContext context = Mock.Of<ServerCallContext>();
 
         _authorServiceMock.Setup(s =>
             s.GetAuthorAsync(1, context.CancellationToken))
@@ -95,7 +97,7 @@ public class GrpcAuthorServiceTests
     }
 
     [Fact]
-    public async Task CreateAuthor_IfAuthorIsValid_ShouldReturnCreatedEntity()
+    public async Task CreateAuthor_IfCreateAuthorRequestIsValid_ShouldReturnCreatedEntity()
     {
         CreateAuthorRequest createAuthorRequest = new CreateAuthorRequest
         {
@@ -115,13 +117,13 @@ public class GrpcAuthorServiceTests
             IsActive = true,
             BookCount = 0
         };
-        var context = Mock.Of<ServerCallContext>();
+        ServerCallContext context = Mock.Of<ServerCallContext>();
 
         _authorServiceMock.Setup(s =>
             s.CreateAuthorAsync(It.IsAny<CreateAuthorCommand>(), context.CancellationToken))
             .ReturnsAsync(createdAuthor);
 
-        var createdGrpcAuthor = await _grpcAuthorService.CreateAuthor(createAuthorRequest, context);
+        AuthorResponse createdGrpcAuthor = await _grpcAuthorService.CreateAuthor(createAuthorRequest, context);
         Assert.Equal(createdAuthor.FirstName, createdGrpcAuthor.FirstName);
 
         _authorServiceMock.Verify(s =>
@@ -130,17 +132,36 @@ public class GrpcAuthorServiceTests
     }
 
     [Fact]
-    public async Task CreateAuthor_IfAuthorIsInvalid_ShouldThrowException()
+    public async Task CreateAuthor_IfCreateAuthorRequestIsInvalid_ShouldThrowException()
     {
-        CreateAuthorRequest createAuthorRequest = new CreateAuthorRequest
+        ServerCallContext context = Mock.Of<ServerCallContext>();
+
+        _authorServiceMock.Setup(s => s.CreateAuthorAsync(It.IsAny<CreateAuthorCommand>(), context.CancellationToken))
+            .ThrowsAsync(new Exception("Unknown issue"));
+        CreateAuthorRequest request = new CreateAuthorRequest();
+        RpcException grpcException = await Assert.ThrowsAsync<RpcException>(() =>
+            _grpcAuthorService.CreateAuthor(request, context));
+
+        Assert.Equal(StatusCode.Unknown, grpcException.StatusCode);
+
+        _authorServiceMock.Verify(s => s.CreateAuthorAsync(It.IsAny<CreateAuthorCommand>(), context.CancellationToken),
+            Times.Once);
+    }
+
+    [Fact]
+    public async Task UpdateAuthor_IfUpdateAuthorRequestIsValid_ShouldReturnUpdatedEntity()
+    {
+        UpdateAuthorRequest updateAuthorRequest = new UpdateAuthorRequest
         {
+            AuthorId = 1,
             FirstName = "Max",
             LastName = "Payne",
             Biography = "Max Payne Bio",
-            DateOfBirth = "12-31-2000"
+            DateOfBirth = "2000-12-31",
+            IsActive = true
         };
 
-        AuthorDto createdAuthor = new AuthorDto
+        AuthorDto updatedAuthor = new AuthorDto
         {
             AuthorId = 1,
             FirstName = "Max",
@@ -150,14 +171,44 @@ public class GrpcAuthorServiceTests
             IsActive = true,
             BookCount = 0
         };
-        var context = Mock.Of<ServerCallContext>();
 
-        _authorServiceMock.Setup(s => s.CreateAuthorAsync(It.IsAny<CreateAuthorCommand>(), context.CancellationToken))
-            .ReturnsAsync(createdAuthor);
+        ServerCallContext context = Mock.Of<ServerCallContext>();
 
-        Assert.ThrowsAsync<RpcException>(async () => await _grpcAuthorService.CreateAuthor(createAuthorRequest, context));
+        _authorServiceMock.Setup(s =>
+            s.UpdateAuthorAsync(It.IsAny<UpdateAuthorCommand>(), context.CancellationToken))
+            .ReturnsAsync(updatedAuthor);
 
-        _authorServiceMock.Verify(s => s.CreateAuthorAsync(It.IsAny<CreateAuthorCommand>(), context.CancellationToken),
+        AuthorResponse updatedGrpcAuthor = await _grpcAuthorService.UpdateAuthor(updateAuthorRequest, context);
+        Assert.Equal(updatedAuthor.Biography, updatedGrpcAuthor.Biography);
+
+        _authorServiceMock.Verify(s =>
+            s.UpdateAuthorAsync(It.IsAny<UpdateAuthorCommand>(), context.CancellationToken),
             Times.Once);
+    }
+
+    [Fact]
+    public async Task UpdateAuthor_IfUpdateAuthorRequestIsinvalid_ShouldThrowException()
+    {
+        UpdateAuthorRequest updateAuthorRequest = new UpdateAuthorRequest
+        {
+            AuthorId = 1,
+            FirstName = "Max",
+            LastName = "Payne",
+            Biography = "Max Payne Bio",
+            DateOfBirth = "12-31-2000",
+            IsActive = true
+        };
+
+        ServerCallContext context = Mock.Of<ServerCallContext>();
+
+        _authorServiceMock.Setup(s =>
+            s.UpdateAuthorAsync(It.IsAny<UpdateAuthorCommand>(), context.CancellationToken))
+            .ThrowsAsync(new Exception("Unknown issue"));
+
+        RpcException grpcException = await Assert.ThrowsAsync<RpcException>(() =>
+            _grpcAuthorService.UpdateAuthor(updateAuthorRequest, context));
+
+        Assert.Equal(StatusCode.Unknown, grpcException.StatusCode);
+
     }
 }   
