@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-
 namespace LibraryManagement.Infrastructure.Data.Configurations.Users;
 
 public class UserConfiguration : IEntityTypeConfiguration<User>

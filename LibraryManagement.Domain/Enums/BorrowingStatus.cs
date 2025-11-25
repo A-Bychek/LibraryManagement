@@ -1,9 +1,8 @@
-﻿namespace LibraryManagement.Domain.Enums
+﻿namespace LibraryManagement.Domain.Enums;
+
+public enum BorrowingStatus
 {
-    public enum BorrowingStatus
-    {
-        Active,
-        Returned,
-        Overdue
-    }
+    Active,
+    Returned,
+    Overdue
 }

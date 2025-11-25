@@ -39,5 +39,3 @@ public class BorrowingConfiguration : IEntityTypeConfiguration<Borrowing>
         modelBuilder.HasIndex(x => x.DueDate);
     }
 }
-
-

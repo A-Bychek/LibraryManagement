@@ -2,14 +2,13 @@
 using LibraryManagement.Application.DTOs.Authors;
 using LibraryManagement.Domain.Entities;
 
-namespace LibraryManagement.Application.Mappings.Authors
+namespace LibraryManagement.Application.Mappings.Authors;
+
+public class AuthorMappingProfile : Profile
 {
-    public class AuthorMappingProfile : Profile
+    public AuthorMappingProfile()
     {
-        public AuthorMappingProfile()
-        {
-            CreateMap<Author, AuthorDto>()
-                .ForMember(dest => dest.BookCount, opt => opt.MapFrom(src => src.Books.Count));
-        }
+        CreateMap<Author, AuthorDto>()
+            .ForMember(dest => dest.BookCount, opt => opt.MapFrom(src => src.Books.Count));
     }
 }

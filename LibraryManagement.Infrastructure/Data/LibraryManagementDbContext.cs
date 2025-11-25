@@ -34,11 +34,5 @@ namespace LibraryManagement.Infrastructure.Data
 
             base.OnModelCreating(modelBuilder);
         }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseSqlite("Data Source=testdb.db");
-        }
-        
     }
 }

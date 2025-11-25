@@ -14,26 +14,25 @@ using LibraryManagement.Application.Validation.Borrowings;
 using LibraryManagement.Application.Validation.Categories;
 using SimpleInjector;
 
-namespace LibraryManagement.Application
+namespace LibraryManagement.Application;
+
+public static class DependencyInjection
 {
-    public static class DependencyInjection
+    public static void AddApplication(this Container container)
     {
-        public static void AddApplication(this Container container)
-        {
-            container.Register<IAuthorService, AuthorService>(Lifestyle.Scoped);
-            container.Register<IValidator<CreateAuthorCommand>, CreateAuthorCommandValidator>(Lifestyle.Scoped);
-            container.Register<IValidator<UpdateAuthorCommand>, UpdateAuthorCommandValidator>(Lifestyle.Scoped);
+        container.Register<IAuthorService, AuthorService>(Lifestyle.Scoped);
+        container.Register<IValidator<CreateAuthorCommand>, CreateAuthorCommandValidator>(Lifestyle.Scoped);
+        container.Register<IValidator<UpdateAuthorCommand>, UpdateAuthorCommandValidator>(Lifestyle.Scoped);
 
-            container.Register<IBookService, BookService>(Lifestyle.Scoped);
-            container.Register<IValidator<CreateBookCommand>, CreateBookCommandValidator>(Lifestyle.Scoped);
-            container.Register<IValidator<UpdateBookCommand>, UpdateBookCommandValidator>(Lifestyle.Scoped);
+        container.Register<IBookService, BookService>(Lifestyle.Scoped);
+        container.Register<IValidator<CreateBookCommand>, CreateBookCommandValidator>(Lifestyle.Scoped);
+        container.Register<IValidator<UpdateBookCommand>, UpdateBookCommandValidator>(Lifestyle.Scoped);
 
-            container.Register<IBorrowingService, BorrowingService>(Lifestyle.Scoped);
-            container.Register<IValidator<BorrowBookCommand>, BorrowBookCommandValidator>(Lifestyle.Scoped);
-            container.Register<IValidator<ReturnBookCommand>, ReturnBookCommandValidator>(Lifestyle.Scoped);
+        container.Register<IBorrowingService, BorrowingService>(Lifestyle.Scoped);
+        container.Register<IValidator<BorrowBookCommand>, BorrowBookCommandValidator>(Lifestyle.Scoped);
+        container.Register<IValidator<ReturnBookCommand>, ReturnBookCommandValidator>(Lifestyle.Scoped);
 
-            container.Register<ICategoryService, CategoryService>(Lifestyle.Scoped);
-            container.Register<IValidator<CreateCategoryCommand>, CreateCategoryCommandValidator>(Lifestyle.Scoped);
-        }
+        container.Register<ICategoryService, CategoryService>(Lifestyle.Scoped);
+        container.Register<IValidator<CreateCategoryCommand>, CreateCategoryCommandValidator>(Lifestyle.Scoped);
     }
 }

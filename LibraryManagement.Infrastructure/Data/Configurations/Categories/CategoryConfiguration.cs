@@ -38,5 +38,3 @@ public class CategoryConfiguration : IEntityTypeConfiguration<Category>
         modelBuilder.HasIndex(x => x.ParentCategoryId);
     }
 }
-
-

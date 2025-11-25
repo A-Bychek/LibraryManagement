@@ -50,5 +50,3 @@ public class BookConfiguration : IEntityTypeConfiguration<Book>
         modelBuilder.HasIndex(x => x.IsAvailable);
     }
 }
-
-

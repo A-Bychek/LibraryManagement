@@ -20,6 +20,7 @@ public class PagedResult<T>: IEnumerable
     {
         return new PagedResult<T>(items, totalCount, pageNumber, pageSize);
     }
+
     public IEnumerator GetEnumerator()
     {
         return Items.GetEnumerator();

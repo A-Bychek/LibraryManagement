@@ -34,9 +34,13 @@ container.AddApplication();
 container.AddInfrastructure(options);
 container.Register<GrpcAuthorService>(Lifestyle.Scoped);
 container.Register<GrpcBookService>(Lifestyle.Scoped);
+container.Register<GrpcBorrowingService>(Lifestyle.Scoped);
+container.Register<GrpcCategoryService>(Lifestyle.Scoped);
 
 builder.Services.AddScoped<GrpcAuthorService>(sp => container.GetInstance<GrpcAuthorService>());
 builder.Services.AddScoped<GrpcBookService>(sp => container.GetInstance<GrpcBookService>());
+builder.Services.AddScoped<GrpcBorrowingService>(sp => container.GetInstance<GrpcBorrowingService>());
+builder.Services.AddScoped<GrpcCategoryService>(sp => container.GetInstance<GrpcCategoryService>());
 
 builder.Services.AddGrpc();
 
@@ -46,6 +50,8 @@ app.Services.UseSimpleInjector(container);
 
 app.MapGrpcService<GrpcAuthorService>();
 app.MapGrpcService<GrpcBookService>();
+app.MapGrpcService<GrpcBorrowingService>();
+app.MapGrpcService<GrpcCategoryService>();
 
 container.Verify();
 

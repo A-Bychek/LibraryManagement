@@ -1,7 +1,6 @@
-﻿namespace LibraryManagement.Application.Commands.Borrowing
+﻿namespace LibraryManagement.Application.Commands.Borrowing;
+
+public class ReturnBookCommand
 {
-    public class ReturnBookCommand
-    {
-        public long BorrowingId { get; set; }
-    }
+    public long BorrowingId { get; set; }
 }
