@@ -5,12 +5,15 @@ using LibraryManagement.Api.Services;
 using LibraryManagement.Application.Commands.Author;
 using LibraryManagement.Application.DTOs.Authors;
 using LibraryManagement.Application.Interfaces.Services;
+using LibraryManagement.Application.QueryModels.Authors;
 using LibraryManagement.Contract.Authors;
+using LibraryManagement.Shared;
 using LibraryManagement.Shared.Exceptions;
 using Microsoft.Extensions.Logging;
 using Moq;
 
 namespace LibraryManagement.Integration.Tests.Api;
+
 public class GrpcAuthorServiceTests
 {
     private readonly Mock<IAuthorService> _authorServiceMock;
@@ -209,6 +212,78 @@ public class GrpcAuthorServiceTests
             _grpcAuthorService.UpdateAuthor(updateAuthorRequest, context));
 
         Assert.Equal(StatusCode.Unknown, grpcException.StatusCode);
+    }
 
+    [Fact]
+    public async Task GetAuthors_IfAuthorsExist_ShouldReturnEntity()
+    {
+        AuthorDto author = new AuthorDto
+        {
+            AuthorId = 1,
+            FirstName = "Max",
+            LastName = "Payne",
+            Biography = "Max Payne Bio",
+            DateOfBirth = "2000-12-31",
+            IsActive = true,
+            BookCount = 1
+        };
+        PagedResult<AuthorDto> authors = PagedResult<AuthorDto>.Create([author], 1, 1, 15);
+
+        ServerCallContext context = Mock.Of<ServerCallContext>();
+
+        _authorServiceMock.Setup(s =>
+            s.GetAuthorsAsync(It.IsAny<AuthorSearchArgs>(), context.CancellationToken))
+            .ReturnsAsync(authors);
+
+        AuthorSearchRequest authorSearchRequest = new AuthorSearchRequest
+        {
+            SearchTerm = "Max",
+            IsActive = true,
+            PageNumber = 1,
+            PageSize = 15
+        };
+
+        AuthorListResponse result = await _grpcAuthorService.GetAuthors(authorSearchRequest, context);
+        Assert.Equal(authors.TotalCount, result.TotalCount);
+
+        _authorServiceMock.Verify(s =>
+            s.GetAuthorsAsync(It.IsAny<AuthorSearchArgs>(), context.CancellationToken),
+            Times.Once);
+    }
+
+    [Fact]
+    public async Task GetAuthors_IfAuthorSearchRequestIsInvalid_ShouldThrowException()
+    {
+        AuthorDto author = new AuthorDto
+        {
+            AuthorId = 1,
+            FirstName = "Max",
+            LastName = "Payne",
+            Biography = "Max Payne Bio",
+            DateOfBirth = "2000-12-31",
+            IsActive = true,
+            BookCount = 1
+        };
+        PagedResult<AuthorDto> authors = PagedResult<AuthorDto>.Create([author], 1, 1, 15);
+
+        ServerCallContext context = Mock.Of<ServerCallContext>();
+
+        _authorServiceMock.Setup(s =>
+            s.GetAuthorsAsync(It.IsAny<AuthorSearchArgs>(), context.CancellationToken))
+            .ReturnsAsync(authors);
+
+        AuthorSearchRequest authorSearchRequest = new AuthorSearchRequest
+        {
+            SearchTerm = "Max",
+            IsActive = true,
+            PageNumber = 1,
+            PageSize = 15
+        };
+
+        Assert.ThrowsAsync<NotFoundException>(async () => await _grpcAuthorService.GetAuthors(authorSearchRequest, context));
+
+        _authorServiceMock.Verify(s =>
+            s.GetAuthorsAsync(It.IsAny<AuthorSearchArgs>(), context.CancellationToken),
+            Times.Once);
     }
 }   

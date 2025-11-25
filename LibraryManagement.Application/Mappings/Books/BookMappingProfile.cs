@@ -13,5 +13,3 @@ public class BookMappingProfile : Profile
             .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.Category != null ? src.Category.Name : "Unknown category"));
     }
 }
-
-

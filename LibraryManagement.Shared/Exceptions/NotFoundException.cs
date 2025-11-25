@@ -1,4 +1,5 @@
 ﻿namespace LibraryManagement.Shared.Exceptions;
+
 public class NotFoundException : Exception
 {
     public NotFoundException() { }

@@ -1,13 +1,12 @@
-﻿namespace LibraryManagement.Application.Commands.Author
-{
-    public class UpdateAuthorCommand
-    {
-        public long AuthorId { get; set; }
-        public string? FirstName { get; set; }
-        public string? LastName { get; set; }
+﻿namespace LibraryManagement.Application.Commands.Author;
 
-        public string? Biography { get; set; }
-        public string? DateOfBirth { get; set; } // ISO 8601 format?
-        public bool? IsActive { get; set; }
-    }
+public class UpdateAuthorCommand
+{
+    public long AuthorId { get; set; }
+    public string? FirstName { get; set; }
+    public string? LastName { get; set; }
+
+    public string? Biography { get; set; }
+    public string? DateOfBirth { get; set; } // ISO 8601 format?
+    public bool? IsActive { get; set; }
 }

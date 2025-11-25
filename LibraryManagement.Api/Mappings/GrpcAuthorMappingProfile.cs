@@ -6,7 +6,6 @@ using LibraryManagement.Contract.Authors;
 
 namespace LibraryManagement.Api.Mappings;
 
-
 public class GrpcAuthorMappingProfile : Profile
 {
     public GrpcAuthorMappingProfile()

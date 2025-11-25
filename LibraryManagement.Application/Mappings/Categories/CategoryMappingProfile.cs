@@ -10,8 +10,7 @@ public class CategoryMappingProfile : Profile
     {
         CreateMap<Category, CategoryDto>()
             .ForMember(dest => dest.ParentCategoryName, opt => opt.MapFrom(src => src.ParentCategory != null ? src.ParentCategory.Name : null))
-            .ForMember(dest => dest.BookCount, opt => opt.MapFrom(src => src.Books.Count));
+            .ForMember(dest => dest.BookCount, opt => opt.MapFrom(src => src.Books.Count))
+            .ForMember(dest => dest.SubCategories, opt => opt.MapFrom(src => src.SubCategories));
     }
 }
-
-

@@ -16,5 +16,6 @@ public class GrpcBookMappingProfile : Profile
         CreateMap<BookSearchRequest, BookSearchArgs>()
             .ForMember(dest => dest.PageNumber, opt => opt.MapFrom(src => src.PageNumber > 0 ? src.PageNumber : 1))
             .ForMember(dest => dest.PageSize, opt => opt.MapFrom(src => src.PageSize > 0 ? src.PageSize : 15));
+        CreateMap<DeleteBookDto, DeleteResponse>();
     }
 }

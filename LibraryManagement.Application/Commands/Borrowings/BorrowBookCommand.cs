@@ -1,11 +1,8 @@
-﻿using System;
+﻿namespace LibraryManagement.Application.Commands.Borrowing;
 
-namespace LibraryManagement.Application.Commands.Borrowing
+public class BorrowBookCommand
 {
-    public class BorrowBookCommand
-    {
-        public long BookId { get; set; }
-        public long UserId { get; set; }
-        public int DaysToReturn { get; set; } = 14;
-    }
+    public long BookId { get; set; }
+    public long UserId { get; set; }
+    public int DaysToReturn { get; set; } = 14;
 }

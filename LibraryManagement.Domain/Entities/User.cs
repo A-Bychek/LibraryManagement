@@ -1,8 +1,7 @@
-﻿namespace LibraryManagement.Domain.Entities
+﻿namespace LibraryManagement.Domain.Entities;
+
+public class User
 {
-    public class User
-    {
-        public long UserId;
-        public Borrowing Borrowing { get; set; } = null!;
-    }
+    public long UserId;
+    public Borrowing Borrowing { get; set; } = null!;
 }
