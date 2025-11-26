@@ -30,7 +30,7 @@ public class AuthorService : IAuthorService
         _updateAuthorCommandValidator = updateAuthorCommandValidator;
     }
 
-    public async Task<PagedResult<AuthorDto>> GetAuthorsAsync(AuthorSearchArgs authorSearchArgs, CancellationToken cancellationToken)
+    public async Task<PagedResult<AuthorDto>> GetAuthorsAsync(AuthorSearchArgs authorSearchArgs, CancellationToken cancellationToken = default)
     {
         var authors = await _authorRepository.FindAsync(authorSearchArgs, cancellationToken);
 
@@ -39,13 +39,13 @@ public class AuthorService : IAuthorService
         return PagedResult<AuthorDto>.Create(mappedAuthors, authors.TotalCount, authors.PageNumber, authors.PageSize); // re-check this
     }
 
-    public async Task<AuthorDto> GetAuthorAsync(long authorId, CancellationToken cancellationToken)
+    public async Task<AuthorDto> GetAuthorAsync(long authorId, CancellationToken cancellationToken = default)
     {
-        var author = await _authorRepository.GetByIdAsync(authorId, cancellationToken) ?? throw new NotFoundException($"Can't find a {authorId} author"!);
+        var author = await _authorRepository.GetByIdAsync(authorId, cancellationToken) ?? throw new NotFoundException($"Can't find a {authorId} author!");
         return _mapper.Map<AuthorDto>(author);
     }
 
-    public async Task<AuthorDto> CreateAuthorAsync(CreateAuthorCommand createAuthorCommand, CancellationToken cancellationToken)
+    public async Task<AuthorDto> CreateAuthorAsync(CreateAuthorCommand createAuthorCommand, CancellationToken cancellationToken = default)
     {
         await _createAuthorCommandValidator.ValidateAndThrowAsync(createAuthorCommand, cancellationToken);
         var author = new Author()
@@ -59,7 +59,7 @@ public class AuthorService : IAuthorService
         return _mapper.Map<AuthorDto>(author);
     }
 
-    public async Task<AuthorDto> UpdateAuthorAsync(UpdateAuthorCommand updateAuthorCommand, CancellationToken cancellationToken)
+    public async Task<AuthorDto> UpdateAuthorAsync(UpdateAuthorCommand updateAuthorCommand, CancellationToken cancellationToken = default)
     {
         await _updateAuthorCommandValidator.ValidateAndThrowAsync (updateAuthorCommand, cancellationToken);
         var author = await _authorRepository.GetByIdAsync(updateAuthorCommand.AuthorId, cancellationToken) ?? throw new NotFoundException($"Can't find a {updateAuthorCommand.AuthorId} author!");
@@ -73,16 +73,21 @@ public class AuthorService : IAuthorService
         return _mapper.Map<AuthorDto>(author);
     }
 
-    public async Task<int> GetAuthorBookCountAsync(long authorId, CancellationToken cancellationToken)
+    public async Task<int> GetAuthorBookCountAsync(long authorId, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
-        // return await _context.Books.CountAsync(x => x.AuthorId = authorId); // (re-check the context)
+        var author = await GetAuthorAsync(authorId, cancellationToken);
+        return author.BookCount;
     }
 
-    public async Task<AuthorDto> DeleteAuthorAsync(long authorId, CancellationToken cancellationToken)
+    public async Task<DeleteAuthorDto> DeleteAuthorAsync(long authorId, CancellationToken cancellationToken = default)
     {
-        var author = await _authorRepository.GetByIdAsync(authorId, cancellationToken);
+        Author? author = await _authorRepository.GetByIdAsync(authorId, cancellationToken) 
+            ?? throw new NotFoundException($"Can't find a {authorId} author!"); 
         await _authorRepository.DeleteAsync(author, cancellationToken);
-        return _mapper.Map<AuthorDto>(author); // change, return the operation status
+        return new DeleteAuthorDto
+        {
+            Success = true,
+            Message = $"Successfully removed the author with {authorId} authorId."
+        };
     }
 }

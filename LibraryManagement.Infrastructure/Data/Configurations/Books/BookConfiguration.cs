@@ -36,13 +36,12 @@ public class BookConfiguration : IEntityTypeConfiguration<Book>
         modelBuilder.HasOne(x => x.Author)
             .WithMany(y => y.Books)
             .HasForeignKey(x => x.AuthorId)
-            .OnDelete(DeleteBehavior.SetNull);
+            .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.HasOne(x => x.Category)
             .WithMany(c => c.Books)
             .HasForeignKey(x => x.CategoryId)
-            .OnDelete(DeleteBehavior.SetNull);
-
+            .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.HasIndex(x => x.ISBN);
         modelBuilder.HasIndex(x => x.AuthorId);

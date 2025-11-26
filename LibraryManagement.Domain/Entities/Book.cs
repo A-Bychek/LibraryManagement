@@ -15,6 +15,4 @@ public class Book
     public bool IsAvailable { get; set; }
     public DateTime CreatedDate { get; set; }
     public DateTime? UpdatedDate { get; set; }
-
-    public ICollection<Borrowing> Borrowings { get; set; } = new List<Borrowing>();
 }
