@@ -31,13 +31,14 @@ public class BookService : IBookService
         _updateBookCommandValidator = updateBookCommandValidator;
     }
 
-    public async Task<BookDto> GetBookAsync(long bookId, CancellationToken cancellationToken)
+    public async Task<BookDto> GetBookAsync(long bookId, CancellationToken cancellationToken = default)
     {
-        var book = await _bookRepository.GetByIdAsync(bookId, cancellationToken);
+        var book = await _bookRepository.GetByIdAsync(bookId, cancellationToken)
+            ?? throw new NotFoundException($"Can't find the book with {bookId} bookId!");
         return _mapper.Map<BookDto>(book);
     }
 
-    public async Task<PagedResult<BookDto>> GetBooksAsync(BookSearchArgs bookSearchArgs, CancellationToken cancellationToken)
+    public async Task<PagedResult<BookDto>> GetBooksAsync(BookSearchArgs bookSearchArgs, CancellationToken cancellationToken = default)
     {
         var books = await _bookRepository.FindAsync(bookSearchArgs, cancellationToken);
 
@@ -47,7 +48,7 @@ public class BookService : IBookService
 
     }
 
-    public async Task<BookDto> CreateBookAsync(CreateBookCommand createBookCommand, CancellationToken cancellationToken)
+    public async Task<BookDto> CreateBookAsync(CreateBookCommand createBookCommand, CancellationToken cancellationToken = default)
     {
         await _createBookCommandValidator.ValidateAndThrowAsync(createBookCommand, cancellationToken);
         var book = new Book()
@@ -64,7 +65,7 @@ public class BookService : IBookService
         return await GetBookAsync(book.BookId, cancellationToken);
     }
 
-    public async Task<BookDto> UpdateBookAsync(UpdateBookCommand updateBookCommand, CancellationToken cancellationToken)
+    public async Task<BookDto> UpdateBookAsync(UpdateBookCommand updateBookCommand, CancellationToken cancellationToken = default)
     {
         await _updateBookCommandValidator.ValidateAndThrowAsync(updateBookCommand, cancellationToken);
         var book = await _bookRepository.GetByIdAsync(updateBookCommand.BookId, cancellationToken) ?? throw new NotFoundException($"Can't find a {updateBookCommand.BookId} book!");
@@ -78,19 +79,20 @@ public class BookService : IBookService
         return _mapper.Map<BookDto>(book);
     }
 
-    public async Task<DeleteBookDto> DeleteBookAsync(long bookId, CancellationToken cancellationToken)
+    public async Task<DeleteBookDto> DeleteBookAsync(long bookId, CancellationToken cancellationToken = default)
     {
-        var book = await _bookRepository.GetByIdAsync(bookId, cancellationToken);
+        var book = await _bookRepository.GetByIdAsync(bookId, cancellationToken)
+            ?? throw new NotFoundException($"Successfully removed the book with {bookId} bookId.");
 
         await _bookRepository.DeleteAsync(book, cancellationToken);
         return new DeleteBookDto
         {
             Success = true,
-            Message = $"Successfully removed {bookId} bookId."
+            Message = $"Successfully removed the book with {bookId} bookId."
         };
     }
 
-    public async Task<BorrowingStatus> CheckAvailabilityAsync(long bookId, CancellationToken cancellationToken)
+    public async Task<BorrowingStatus> CheckAvailabilityAsync(long bookId, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
         // return _context.Borrowings.Where(x => x.BookId == bookId).FirstOrDefault().Status; // re-check this

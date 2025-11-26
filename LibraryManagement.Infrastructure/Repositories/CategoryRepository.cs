@@ -28,7 +28,7 @@ public class CategoryRepository: ICategoryRepository
         await _context.SaveChangesAsync(cancellationToken);
         return category;
     }
-
+    /*
     public async Task<Category> UpdateAsync(Category category, CancellationToken cancellationToken = default)
     {
         _context.Categories.Update(category);
@@ -47,7 +47,7 @@ public class CategoryRepository: ICategoryRepository
     {
         return await _context.Categories.ToListAsync(cancellationToken);
     }
-
+    */
     public async Task<IEnumerable<Category>> GetCategoryTreeAsync(bool includeInactive, CancellationToken cancellationToken = default)
     {
         var categories = await _context.Categories

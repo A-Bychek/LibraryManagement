@@ -36,7 +36,7 @@ public class BorrowingService: IBorrowingService
         _returnBookCommandValidator = returnBookCommandValidator;
     }
 
-    public async Task<BorrowingDto> BorrowBookAsync(BorrowBookCommand borrowBookCommand, CancellationToken cancellationToken)
+    public async Task<BorrowingDto> BorrowBookAsync(BorrowBookCommand borrowBookCommand, CancellationToken cancellationToken = default)
     {
         await _borrowBookCommandValidator.ValidateAndThrowAsync(borrowBookCommand, cancellationToken);
 
@@ -67,7 +67,7 @@ public class BorrowingService: IBorrowingService
         return _mapper.Map<Borrowing, BorrowingDto>(borrowing);
     }
 
-    public async Task<BorrowingDto> ReturnBookAsync(ReturnBookCommand returnBookCommand, CancellationToken cancellationToken)
+    public async Task<BorrowingDto> ReturnBookAsync(ReturnBookCommand returnBookCommand, CancellationToken cancellationToken = default)
     {
         await _returnBookCommandValidator.ValidateAndThrowAsync(returnBookCommand, cancellationToken);
 
@@ -92,7 +92,10 @@ public class BorrowingService: IBorrowingService
         return _mapper.Map<Borrowing, BorrowingDto>(borrowing, opt => opt.AfterMap((src, dest) => dest.FineAmount = fineAmount));
     }
 
-    public async Task<PagedResult<BorrowingDto>> GetUserBorrowingsAsync(BorrowingSearchArgs borrowingSearchArgs, CancellationToken cancellationToken)
+    public async Task<PagedResult<BorrowingDto>> GetUserBorrowingsAsync(
+        BorrowingSearchArgs borrowingSearchArgs,
+        CancellationToken cancellationToken = default
+        )
     {
         await UpdateStatuses(cancellationToken);
 
@@ -117,7 +120,7 @@ public class BorrowingService: IBorrowingService
             );
     }
 
-    public async Task<List<BorrowingDto>> GetOverdueBooksAsync(CancellationToken cancellationToken)
+    public async Task<List<BorrowingDto>> GetOverdueBooksAsync(CancellationToken cancellationToken = default)
     {
         await UpdateStatuses(cancellationToken);
         List<Borrowing> overdueBooks = _borrowingRepository.GetAllAsync(cancellationToken)
@@ -132,7 +135,7 @@ public class BorrowingService: IBorrowingService
         return mappedBorrowings;
     }
 
-    public async Task<double> CalculateFineAsync(long borrowingid, CancellationToken cancellationToken)
+    public async Task<double> CalculateFineAsync(long borrowingid, CancellationToken cancellationToken = default)
     {
         var borrowing = await _borrowingRepository.GetByIdAsync(borrowingid, cancellationToken);
         if (borrowing.DueDate < DateTime.UtcNow)
@@ -142,15 +145,15 @@ public class BorrowingService: IBorrowingService
         return 0;
     }
 
-    public async Task UpdateStatuses(CancellationToken cancellationToken)
+    public async Task UpdateStatuses(CancellationToken cancellationToken = default)
     {
         var borrowings = _borrowingRepository.GetAllAsync(cancellationToken)
             .Result
             .Where(x => x.Status == BorrowingStatus.Active && x.DueDate < DateTime.UtcNow);
-        foreach(var borr in borrowings)
+        foreach(var borrowing in borrowings)
         {
-            borr.Status = BorrowingStatus.Overdue;
+            borrowing.Status = BorrowingStatus.Overdue;
+            await _borrowingRepository.UpdateAsync(borrowing);
         }
-        await _borrowingRepository.SaveAsync(cancellationToken);
     }
 }

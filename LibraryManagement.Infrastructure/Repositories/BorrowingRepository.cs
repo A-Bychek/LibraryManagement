@@ -34,20 +34,8 @@ public class BorrowingRepository: IBorrowingRepository
         return borrowing;
     }
 
-    public async Task<Borrowing> DeleteAsync(Borrowing borrowing, CancellationToken cancellationToken = default)
-    {
-        _context.Borrowings.Remove(borrowing);
-        await _context.SaveChangesAsync();
-        return borrowing;
-    }
-
     public async Task<ICollection<Borrowing>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         return await _context.Borrowings.Include(x => x.Book).ToListAsync(cancellationToken);
-    }
-
-    public async Task SaveAsync(CancellationToken cancellationToken)
-    {
-       await _context.SaveChangesAsync(cancellationToken);
     }
 }

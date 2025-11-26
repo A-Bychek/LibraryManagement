@@ -26,9 +26,9 @@ public class BorrowingConfiguration : IEntityTypeConfiguration<Borrowing>
             .HasMaxLength(15);
 
         modelBuilder.HasOne(x => x.Book)
-            .WithMany()
-            .HasForeignKey(x => x.BookId)
-            .OnDelete(DeleteBehavior.SetNull);
+            .WithOne()
+            .HasForeignKey<Borrowing>(x => x.BookId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.HasOne(x => x.User)
             .WithOne(y => y.Borrowing)

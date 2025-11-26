@@ -3,6 +3,7 @@ using System;
 using LibraryManagement.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LibraryManagement.Infrastructure.Migrations
 {
     [DbContext(typeof(LibraryManagementDbContext))]
-    partial class LibraryManagementDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251126091221_RemoveBorrowingsFromBookConfiguration")]
+    partial class RemoveBorrowingsFromBookConfiguration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.11");
@@ -137,8 +140,7 @@ namespace LibraryManagement.Infrastructure.Migrations
 
                     b.HasKey("BorrowingId");
 
-                    b.HasIndex("BookId")
-                        .IsUnique();
+                    b.HasIndex("BookId");
 
                     b.HasIndex("DueDate");
 
@@ -221,9 +223,9 @@ namespace LibraryManagement.Infrastructure.Migrations
             modelBuilder.Entity("LibraryManagement.Domain.Entities.Borrowing", b =>
                 {
                     b.HasOne("LibraryManagement.Domain.Entities.Book", "Book")
-                        .WithOne()
-                        .HasForeignKey("LibraryManagement.Domain.Entities.Borrowing", "BookId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .WithMany()
+                        .HasForeignKey("BookId")
+                        .OnDelete(DeleteBehavior.SetNull)
                         .IsRequired();
 
                     b.HasOne("LibraryManagement.Domain.Entities.User", "User")
