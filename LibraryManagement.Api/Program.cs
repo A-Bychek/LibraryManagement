@@ -1,6 +1,6 @@
 using LibraryManagement.Api;
 using LibraryManagement.Api.Services;
-using LibraryManagement.Application;
+using LibraryManagement.Contract;
 using LibraryManagement.Infrastructure;
 using LibraryManagement.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;

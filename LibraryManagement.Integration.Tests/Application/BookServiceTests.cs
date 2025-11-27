@@ -1,14 +1,14 @@
 ﻿using FluentValidation;
-using LibraryManagement.Application.Commands.Book;
 using LibraryManagement.Application.DTOs.Books;
 using LibraryManagement.Application.Interfaces.Services;
-using LibraryManagement.Application.QueryModels.Books;
+using LibraryManagement.Contract.Commands.Book;
+using LibraryManagement.Contract.QueryModels.Books;
 using LibraryManagement.Integration.Tests.Fixtures;
 using LibraryManagement.Shared;
 using LibraryManagement.Shared.Exceptions;
 using SimpleInjector.Lifestyles;
 
-namespace LibraryManagement.Integration.Tests.Infrastructure;
+namespace LibraryManagement.Integration.Tests.Application;
 
 public class BookServiceTests : IClassFixture<SqliteTestDatabaseFixture>
 {
@@ -30,7 +30,7 @@ public class BookServiceTests : IClassFixture<SqliteTestDatabaseFixture>
             Assert.NotNull(book);
             Assert.Equal(1, book.AuthorId);
             Assert.Equal("1111111111111", book.ISBN);
-            Assert.Equal("Test Book 1", book.Title);
+            Assert.Equal("Test Title Updated", book.Title);
             Assert.Equal("Test Name 1 Last Name 1", book.AuthorName);
         }
     }

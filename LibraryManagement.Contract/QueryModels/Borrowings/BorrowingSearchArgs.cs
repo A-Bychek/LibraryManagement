@@ -1,6 +1,6 @@
 ﻿using LibraryManagement.Domain.Enums;
 
-namespace LibraryManagement.Application.QueryModels.Borrowings;
+namespace LibraryManagement.Contract.QueryModels.Borrowings;
 
 public class BorrowingSearchArgs
 {

@@ -1,6 +1,4 @@
-﻿using LibraryManagement.Application.QueryModels.Borrowings;
-using LibraryManagement.Domain.Entities;
-using LibraryManagement.Shared;
+﻿using LibraryManagement.Domain.Entities;
 
 namespace LibraryManagement.Application.Interfaces.Repositories;
 

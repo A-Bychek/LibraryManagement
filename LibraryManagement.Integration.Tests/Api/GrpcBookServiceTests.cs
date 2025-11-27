@@ -2,11 +2,11 @@
 using Grpc.Core;
 using LibraryManagement.Api.Mappings;
 using LibraryManagement.Api.Services;
-using LibraryManagement.Application.Commands.Book;
 using LibraryManagement.Application.DTOs.Books;
 using LibraryManagement.Application.Interfaces.Services;
-using LibraryManagement.Application.QueryModels.Books;
 using LibraryManagement.Contract.Books;
+using LibraryManagement.Contract.Commands.Book;
+using LibraryManagement.Contract.QueryModels.Books;
 using LibraryManagement.Shared;
 using LibraryManagement.Shared.Exceptions;
 using Microsoft.Extensions.Logging;

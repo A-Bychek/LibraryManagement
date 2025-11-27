@@ -1,12 +1,11 @@
 ﻿using AutoMapper;
 using FluentValidation;
-using LibraryManagement.Application.Commands.Book;
 using LibraryManagement.Application.DTOs.Books;
 using LibraryManagement.Application.Interfaces.Repositories;
 using LibraryManagement.Application.Interfaces.Services;
-using LibraryManagement.Application.QueryModels.Books;
+using LibraryManagement.Contract.Commands.Book;
+using LibraryManagement.Contract.QueryModels.Books;
 using LibraryManagement.Domain.Entities;
-using LibraryManagement.Domain.Enums;
 using LibraryManagement.Shared;
 using LibraryManagement.Shared.Exceptions;
 
@@ -18,17 +17,20 @@ public class BookService : IBookService
     private IMapper _mapper { get; set; } = null!;
     private IValidator<CreateBookCommand> _createBookCommandValidator { get; set; }
     private IValidator<UpdateBookCommand> _updateBookCommandValidator { get; set; }
+    private IValidator<BookSearchArgs> _bookSearchArgsValidator { get; set; }
     public BookService(
         IBookRepository bookRepository,
         IMapper mapper,
         IValidator<CreateBookCommand> createBookCommandValidator,
-        IValidator<UpdateBookCommand> updateBookCommandValidator
+        IValidator<UpdateBookCommand> updateBookCommandValidator,
+        IValidator<BookSearchArgs> bookSearchArgsValidator
         )
     {
         _bookRepository = bookRepository;
         _mapper = mapper;
         _createBookCommandValidator = createBookCommandValidator;
         _updateBookCommandValidator = updateBookCommandValidator;
+        _bookSearchArgsValidator = bookSearchArgsValidator;
     }
 
     public async Task<BookDto> GetBookAsync(long bookId, CancellationToken cancellationToken = default)
@@ -40,6 +42,7 @@ public class BookService : IBookService
 
     public async Task<PagedResult<BookDto>> GetBooksAsync(BookSearchArgs bookSearchArgs, CancellationToken cancellationToken = default)
     {
+        await _bookSearchArgsValidator.ValidateAndThrowAsync(bookSearchArgs, cancellationToken);
         var books = await _bookRepository.FindAsync(bookSearchArgs, cancellationToken);
 
         var mappedBooks = books.Items.Select(_mapper.Map<BookDto>);
@@ -90,11 +93,5 @@ public class BookService : IBookService
             Success = true,
             Message = $"Successfully removed the book with {bookId} bookId."
         };
-    }
-
-    public async Task<BorrowingStatus> CheckAvailabilityAsync(long bookId, CancellationToken cancellationToken = default)
-    {
-        throw new NotImplementedException();
-        // return _context.Borrowings.Where(x => x.BookId == bookId).FirstOrDefault().Status; // re-check this
     }
 }

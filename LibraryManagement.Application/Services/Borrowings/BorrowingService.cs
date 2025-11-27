@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
 using FluentValidation;
-using LibraryManagement.Application.Commands.Borrowing;
 using LibraryManagement.Application.DTOs.Borrowings;
 using LibraryManagement.Application.Interfaces.Repositories;
 using LibraryManagement.Application.Interfaces.Services;
-using LibraryManagement.Application.QueryModels.Borrowings;
+using LibraryManagement.Contract.Commands.Borrowing;
+using LibraryManagement.Contract.QueryModels.Borrowings;
 using LibraryManagement.Domain.Entities;
 using LibraryManagement.Domain.Enums;
 using LibraryManagement.Shared;
@@ -21,19 +21,23 @@ public class BorrowingService: IBorrowingService
     private IMapper _mapper;
     private IValidator<BorrowBookCommand> _borrowBookCommandValidator;
     private IValidator<ReturnBookCommand> _returnBookCommandValidator;
+    private IValidator<BorrowingSearchArgs> _borrowingSearchArgsValidator;
 
     public BorrowingService(
         IBorrowingRepository borrowingRepository,
         IBookRepository bookRepository,
         IMapper mapper,
         IValidator<BorrowBookCommand> borrowBookCommandValidator,
-        IValidator<ReturnBookCommand> returnBookCommandValidator)
+        IValidator<ReturnBookCommand> returnBookCommandValidator,
+        IValidator<BorrowingSearchArgs> borrowingSearchArgsValidator
+        )
     {
         _borrowingRepository = borrowingRepository;
         _bookRepository = bookRepository;
         _mapper = mapper;
         _borrowBookCommandValidator = borrowBookCommandValidator;
         _returnBookCommandValidator = returnBookCommandValidator;
+        _borrowingSearchArgsValidator = borrowingSearchArgsValidator;
     }
 
     public async Task<BorrowingDto> BorrowBookAsync(BorrowBookCommand borrowBookCommand, CancellationToken cancellationToken = default)
@@ -97,12 +101,19 @@ public class BorrowingService: IBorrowingService
         CancellationToken cancellationToken = default
         )
     {
+        await _borrowingSearchArgsValidator.ValidateAndThrowAsync(borrowingSearchArgs, cancellationToken);
         await UpdateStatuses(cancellationToken);
 
         var userBorrowings =  _borrowingRepository.GetAllAsync(cancellationToken)
             .Result
             .Where(b => b.UserId == borrowingSearchArgs.UserId && b.Status == borrowingSearchArgs.Status);
 
+        if (!userBorrowings.Any())
+        {
+            throw new NotFoundException($"No borrowings were found for the user with {borrowingSearchArgs.UserId}" +
+                $" and \"{borrowingSearchArgs.Status}\" status");
+        }
+            
         var mappedUserBorrowings = new List<BorrowingDto>();
         foreach (var userBorrowing in userBorrowings)
         {

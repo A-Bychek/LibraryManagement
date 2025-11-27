@@ -1,6 +1,6 @@
-﻿using LibraryManagement.Application.Commands.Borrowing;
-using LibraryManagement.Application.DTOs.Borrowings;
-using LibraryManagement.Application.QueryModels.Borrowings;
+﻿using LibraryManagement.Application.DTOs.Borrowings;
+using LibraryManagement.Contract.Commands.Borrowing;
+using LibraryManagement.Contract.QueryModels.Borrowings;
 using LibraryManagement.Shared;
 
 namespace LibraryManagement.Application.Interfaces.Services;

@@ -1,4 +1,4 @@
-﻿namespace LibraryManagement.Application.QueryModels.Books;
+﻿namespace LibraryManagement.Contract.QueryModels.Books;
 
 public class BookSearchArgs
 {

@@ -1,7 +1,7 @@
 using AutoMapper;
 using LibraryManagement.Application.DTOs.Borrowings;
-using LibraryManagement.Domain.Entities;
 using LibraryManagement.Application.Interfaces.Services;
+using LibraryManagement.Domain.Entities;
 
 namespace LibraryManagement.Application.Mappings.Borrowings;
 

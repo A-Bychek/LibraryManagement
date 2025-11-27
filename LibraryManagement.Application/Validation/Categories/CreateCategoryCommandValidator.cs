@@ -1,5 +1,5 @@
 ﻿using FluentValidation;
-using LibraryManagement.Application.Commands.Category;
+using LibraryManagement.Contract.Commands.Category;
 
 namespace LibraryManagement.Application.Validation.Categories;
 

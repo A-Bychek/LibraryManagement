@@ -1,4 +1,4 @@
-﻿namespace LibraryManagement.Application.Commands.Borrowing;
+﻿namespace LibraryManagement.Contract.Commands.Borrowing;
 
 public class BorrowBookCommand
 {

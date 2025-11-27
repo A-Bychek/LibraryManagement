@@ -1,4 +1,4 @@
-﻿namespace LibraryManagement.Application.Commands.Book;
+﻿namespace LibraryManagement.Contract.Commands.Book;
 
 public  class CreateBookCommand
 {
