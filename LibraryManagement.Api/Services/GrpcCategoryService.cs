@@ -1,12 +1,11 @@
 ﻿using AutoMapper;
 using Grpc.Core;
-using LibraryManagement.Application.Commands.Category;
+using FluentValidation;
 using LibraryManagement.Application.Interfaces.Services;
-using LibraryManagement.Application.QueryModels.Categories;
 using LibraryManagement.Contract.Categories;
-using LibraryManagement.Shared.Exceptions;
+using LibraryManagement.Contract.Commands.Category;
+using LibraryManagement.Contract.QueryModels.Categories;
 using Serilog;
-using System.ComponentModel.DataAnnotations;
 
 namespace LibraryManagement.Api.Services;
 
@@ -35,10 +34,10 @@ public class GrpcCategoryService : CategoryService.CategoryServiceBase
             return mappedCategories;
         }
 
-        catch (NotFoundException exc)
+        catch (ValidationException exc)
         {
-            _logger.Error($"Not found: {exc.Message}");
-            throw new RpcException(new Status(StatusCode.NotFound, exc.Message));
+            _logger.Error($"Validation failed: {exc.Message}");
+            throw new RpcException(new Status(StatusCode.InvalidArgument, exc.Message));
         }
         catch (Exception exc)
         {
@@ -64,12 +63,12 @@ public class GrpcCategoryService : CategoryService.CategoryServiceBase
         catch (ValidationException exc)
         {
             _logger.Error($"Validation failed: {exc.Message}");
-            throw new RpcException(new Status(StatusCode.InvalidArgument, "Validation failed."));
+            throw new RpcException(new Status(StatusCode.InvalidArgument, exc.Message));
         }
         catch (Exception exc)
         {
-            _logger.Error($"Unknown issue: {exc.Message}, {exc.InnerException}, {exc.GetBaseException}");
-            throw new RpcException(new Status(StatusCode.Unknown, "Unknown issue."));
+            _logger.Error($"Unknown issue: {exc.Message}");
+            throw new RpcException(new Status(StatusCode.Unknown, $"Unknown issue: {exc.Message}."));
         }
     }
 
@@ -83,18 +82,18 @@ public class GrpcCategoryService : CategoryService.CategoryServiceBase
             CategoryTreeResponse mappedCategories = new CategoryTreeResponse();
             mappedCategories.Categories.AddRange(categories.Select(x => _mapper.Map<CategoryResponse>(x)));
 
-            _logger.Information($"{categories.Count()} categories have been found.");
+            _logger.Information($"{categories.Count} categories have been found.");
             return mappedCategories;
         }
         catch (ValidationException exc)
         {
             _logger.Error($"Validation failed: {exc.Message}");
-            throw new RpcException(new Status(StatusCode.InvalidArgument, "Validation failed."));
+            throw new RpcException(new Status(StatusCode.InvalidArgument, exc.Message));
         }
         catch (Exception exc)
         {
             _logger.Error($"Unknown issue: {exc.Message}");
-            throw new RpcException(new Status(StatusCode.Unknown, "Unknown issue."));
+            throw new RpcException(new Status(StatusCode.Unknown, $"Unknown issue: {exc.Message}."));
         }
     }
 }

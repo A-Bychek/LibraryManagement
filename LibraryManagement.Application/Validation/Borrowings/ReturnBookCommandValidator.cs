@@ -1,5 +1,5 @@
 ﻿using FluentValidation;
-using LibraryManagement.Application.Commands.Borrowing;
+using LibraryManagement.Contract.Commands.Borrowing;
 
 namespace LibraryManagement.Application.Validation.Borrowings;
 

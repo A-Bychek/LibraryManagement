@@ -1,5 +1,5 @@
 ﻿using LibraryManagement.Api;
-using LibraryManagement.Application;
+using LibraryManagement.Contract;
 using LibraryManagement.Domain.Entities;
 using LibraryManagement.Domain.Enums;
 using LibraryManagement.Infrastructure;
@@ -7,7 +7,6 @@ using LibraryManagement.Infrastructure.Data;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Serilog;
 using SimpleInjector;
 using SimpleInjector.Lifestyles;
 

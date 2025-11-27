@@ -1,4 +1,4 @@
-﻿using LibraryManagement.Application.QueryModels.Categories;
+﻿using LibraryManagement.Contract.QueryModels.Categories;
 using LibraryManagement.Domain.Entities;
 
 namespace LibraryManagement.Application.Interfaces.Repositories;

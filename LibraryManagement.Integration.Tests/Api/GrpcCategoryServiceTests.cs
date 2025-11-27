@@ -2,12 +2,12 @@
 using Grpc.Core;
 using LibraryManagement.Api.Mappings;
 using LibraryManagement.Api.Services;
-using LibraryManagement.Application.Commands.Category;
 using LibraryManagement.Application.DTOs.Categories;
 using LibraryManagement.Application.Interfaces.Services;
-using LibraryManagement.Application.QueryModels.Categories;
 using LibraryManagement.Contract.Books;
 using LibraryManagement.Contract.Categories;
+using LibraryManagement.Contract.Commands.Category;
+using LibraryManagement.Contract.QueryModels.Categories;
 using LibraryManagement.Shared.Exceptions;
 using Microsoft.Extensions.Logging;
 using Moq;

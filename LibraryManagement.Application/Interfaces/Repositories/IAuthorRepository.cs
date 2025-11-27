@@ -1,4 +1,4 @@
-﻿using LibraryManagement.Application.QueryModels.Authors;
+﻿using LibraryManagement.Contract.QueryModels.Authors;
 using LibraryManagement.Domain.Entities;
 using LibraryManagement.Shared;
 

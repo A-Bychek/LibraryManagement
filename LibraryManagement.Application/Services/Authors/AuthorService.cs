@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
 using FluentValidation;
-using LibraryManagement.Application.Commands.Author;
 using LibraryManagement.Application.DTOs.Authors;
 using LibraryManagement.Application.Interfaces.Repositories;
 using LibraryManagement.Application.Interfaces.Services;
-using LibraryManagement.Application.QueryModels.Authors;
+using LibraryManagement.Contract.Commands.Author;
+using LibraryManagement.Contract.QueryModels.Authors;
 using LibraryManagement.Domain.Entities;
 using LibraryManagement.Shared;
 using LibraryManagement.Shared.Exceptions;
@@ -17,21 +17,26 @@ public class AuthorService : IAuthorService
     private IMapper _mapper { get; set; } = null!;
     private IValidator<CreateAuthorCommand> _createAuthorCommandValidator { get; set; }
     private IValidator<UpdateAuthorCommand> _updateAuthorCommandValidator { get; set; }
+    private IValidator<AuthorSearchArgs> _authorSearchArgsValidator { get; set; }
     public AuthorService(
         IAuthorRepository authorRepository, 
         IMapper mapper,
         IValidator<CreateAuthorCommand> createAuthorCommandValidator,
-        IValidator<UpdateAuthorCommand> updateAuthorCommandValidator
+        IValidator<UpdateAuthorCommand> updateAuthorCommandValidator,
+        IValidator<AuthorSearchArgs> authorSearchArgsValidator
         )
     {
         _authorRepository = authorRepository;
         _mapper = mapper;
         _createAuthorCommandValidator = createAuthorCommandValidator;
         _updateAuthorCommandValidator = updateAuthorCommandValidator;
+        _authorSearchArgsValidator = authorSearchArgsValidator;
     }
 
     public async Task<PagedResult<AuthorDto>> GetAuthorsAsync(AuthorSearchArgs authorSearchArgs, CancellationToken cancellationToken = default)
     {
+        await _authorSearchArgsValidator.ValidateAndThrowAsync(authorSearchArgs, cancellationToken);
+
         var authors = await _authorRepository.FindAsync(authorSearchArgs, cancellationToken);
 
         var mappedAuthors = authors.Items.Select(_mapper.Map<AuthorDto>);

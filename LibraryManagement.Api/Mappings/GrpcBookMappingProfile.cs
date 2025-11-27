@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
-using LibraryManagement.Application.Commands.Book;
 using LibraryManagement.Application.DTOs.Books;
-using LibraryManagement.Application.QueryModels.Books;
 using LibraryManagement.Contract.Books;
+using LibraryManagement.Contract.Commands.Book;
+using LibraryManagement.Contract.QueryModels.Books;
 
 namespace LibraryManagement.Api.Mappings;
 

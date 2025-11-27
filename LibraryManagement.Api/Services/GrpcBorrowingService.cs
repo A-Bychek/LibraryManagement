@@ -1,13 +1,13 @@
 ﻿using AutoMapper;
 using Grpc.Core;
-using LibraryManagement.Application.Commands.Borrowing;
+using FluentValidation;
 using LibraryManagement.Application.DTOs.Borrowings;
 using LibraryManagement.Application.Interfaces.Services;
-using LibraryManagement.Application.QueryModels.Borrowings;
 using LibraryManagement.Contract.Borrowings;
+using LibraryManagement.Contract.Commands.Borrowing;
+using LibraryManagement.Contract.QueryModels.Borrowings;
 using LibraryManagement.Shared.Exceptions;
 using Serilog;
-using System.ComponentModel.DataAnnotations;
 
 namespace LibraryManagement.Api.Services;
 
@@ -62,12 +62,12 @@ public class GrpcBorrowingService : BorrowingService.BorrowingServiceBase
         catch (ValidationException exc)
         {
             _logger.Error($"Validation failed: {exc.Message}");
-            throw new RpcException(new Status(StatusCode.InvalidArgument, "Validation failed."));
+            throw new RpcException(new Status(StatusCode.InvalidArgument, exc.Message));
         }
         catch (Exception exc)
         {
-            _logger.Error($"Unknown issue: {exc.Message}, {exc.InnerException}, {exc.GetBaseException}");
-            throw new RpcException(new Status(StatusCode.Unknown, "Unknown issue."));
+            _logger.Error($"Unknown issue: {exc.Message}");
+            throw new RpcException(new Status(StatusCode.Unknown, $"Unknown issue: {exc.Message}."));
         }
     }
 
@@ -95,12 +95,12 @@ public class GrpcBorrowingService : BorrowingService.BorrowingServiceBase
         catch (ValidationException exc)
         {
             _logger.Error($"Validation failed: {exc.Message}");
-            throw new RpcException(new Status(StatusCode.InvalidArgument, "Validation failed."));
+            throw new RpcException(new Status(StatusCode.InvalidArgument, exc.Message));
         }
         catch (Exception exc)
         {
             _logger.Error($"Unknown issue: {exc.Message}");
-            throw new RpcException(new Status(StatusCode.Unknown, "Unknown issue."));
+            throw new RpcException(new Status(StatusCode.Unknown, $"Unknown issue: {exc.Message}."));
         }
     }
 
@@ -128,12 +128,12 @@ public class GrpcBorrowingService : BorrowingService.BorrowingServiceBase
         catch (ValidationException exc)
         {
             _logger.Error($"Validation failed: {exc.Message}");
-            throw new RpcException(new Status(StatusCode.InvalidArgument, "Validation failed."));
+            throw new RpcException(new Status(StatusCode.InvalidArgument, exc.Message));
         }
         catch (Exception exc)
         {
             _logger.Error($"Unknown issue: {exc.Message}");
-            throw new RpcException(new Status(StatusCode.Unknown, "Unknown issue."));
+            throw new RpcException(new Status(StatusCode.Unknown, $"Unknown issue: {exc.Message}."));
         }
     }
 }

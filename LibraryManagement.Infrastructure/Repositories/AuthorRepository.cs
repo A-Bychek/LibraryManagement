@@ -1,9 +1,9 @@
 ﻿using LibraryManagement.Application.Interfaces.Repositories;
-using LibraryManagement.Application.QueryModels.Authors;
+using LibraryManagement.Contract.QueryModels.Authors;
 using LibraryManagement.Domain.Entities;
 using LibraryManagement.Infrastructure.Data;
-using Microsoft.EntityFrameworkCore;
 using LibraryManagement.Shared;
+using Microsoft.EntityFrameworkCore;
 
 namespace LibraryManagement.Infrastructure.Repositories;
 

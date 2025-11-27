@@ -28,6 +28,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\LibraryManagement.Contract\LibraryManagement.Contract.csproj" />
     <ProjectReference Include="..\LibraryManagement.Domain\LibraryManagement.Domain.csproj" />
     <ProjectReference Include="..\LibraryManagement.Shared\LibraryManagement.Shared.csproj" />
   </ItemGroup>

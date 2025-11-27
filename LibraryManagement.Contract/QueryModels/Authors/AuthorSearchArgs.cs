@@ -1,4 +1,4 @@
-﻿namespace LibraryManagement.Application.QueryModels.Authors;
+﻿namespace LibraryManagement.Contract.QueryModels.Authors;
 
 public class AuthorSearchArgs
 {

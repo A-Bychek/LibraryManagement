@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
-using LibraryManagement.Application.Commands.Category;
 using LibraryManagement.Application.DTOs.Categories;
-using LibraryManagement.Application.QueryModels.Categories;
 using LibraryManagement.Contract.Categories;
+using LibraryManagement.Contract.Commands.Category;
+using LibraryManagement.Contract.QueryModels.Categories;
 
 namespace LibraryManagement.Api.Mappings;
 

@@ -1,4 +1,4 @@
-﻿namespace LibraryManagement.Application.Commands.Category;
+﻿namespace LibraryManagement.Contract.Commands.Category;
 
 public class CreateCategoryCommand
 {

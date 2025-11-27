@@ -1,5 +1,5 @@
 ﻿using FluentValidation;
-using LibraryManagement.Application.Commands.Author;
+using LibraryManagement.Contract.Commands.Author;
 using System.Globalization;
 
 namespace LibraryManagement.Application.Validation.Authors;

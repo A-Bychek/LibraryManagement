@@ -1,6 +1,6 @@
-﻿using LibraryManagement.Application.Commands.Author;
-using LibraryManagement.Application.DTOs.Authors;
-using LibraryManagement.Application.QueryModels.Authors;
+﻿using LibraryManagement.Application.DTOs.Authors;
+using LibraryManagement.Contract.Commands.Author;
+using LibraryManagement.Contract.QueryModels.Authors;
 using LibraryManagement.Shared;
 
 namespace LibraryManagement.Application.Interfaces.Services;

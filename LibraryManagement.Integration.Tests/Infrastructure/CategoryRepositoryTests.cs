@@ -1,5 +1,5 @@
 ﻿using LibraryManagement.Application.Interfaces.Repositories;
-using LibraryManagement.Application.QueryModels.Categories;
+using LibraryManagement.Contract.QueryModels.Categories;
 using LibraryManagement.Domain.Entities;
 using LibraryManagement.Infrastructure.Data;
 using LibraryManagement.Integration.Tests.Fixtures;

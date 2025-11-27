@@ -29,5 +29,9 @@
     <PackageReference Include="SQLitePCLRaw.core" Version="3.0.2" />
     <PackageReference Include="SQLitePCLRaw.provider.e_sqlite3" Version="3.0.2" />
   </ItemGroup>
+	
+  <ItemGroup>
+    <ProjectReference Include="..\LibraryManagement.Domain\LibraryManagement.Domain.csproj" />
+  </ItemGroup>
 
 </Project>

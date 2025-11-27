@@ -1,4 +1,4 @@
-﻿namespace LibraryManagement.Application.Commands.Author;
+﻿namespace LibraryManagement.Contract.Commands.Author;
 
 public class CreateAuthorCommand
 {

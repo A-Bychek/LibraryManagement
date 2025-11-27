@@ -1,4 +1,4 @@
-﻿namespace LibraryManagement.Application.QueryModels.Categories;
+﻿namespace LibraryManagement.Contract.QueryModels.Categories;
 
 public class CategorySearchArgs
 {

@@ -1,14 +1,14 @@
 ﻿using FluentValidation;
-using LibraryManagement.Application.Commands.Author;
 using LibraryManagement.Application.DTOs.Authors;
 using LibraryManagement.Application.Interfaces.Services;
-using LibraryManagement.Application.QueryModels.Authors;
+using LibraryManagement.Contract.Commands.Author;
+using LibraryManagement.Contract.QueryModels.Authors;
 using LibraryManagement.Integration.Tests.Fixtures;
 using LibraryManagement.Shared;
 using LibraryManagement.Shared.Exceptions;
 using SimpleInjector.Lifestyles;
 
-namespace LibraryManagement.Integration.Tests.Infrastructure;
+namespace LibraryManagement.Integration.Tests.Application;
 
 public class AuthorServiceTests : IClassFixture<SqliteTestDatabaseFixture>
 {
@@ -63,7 +63,7 @@ public class AuthorServiceTests : IClassFixture<SqliteTestDatabaseFixture>
             PagedResult<AuthorDto>? authors = await _authorService.GetAuthorsAsync(args);
 
             Assert.NotNull(authors);
-            Assert.Equal(2, authors.TotalCount);
+            Assert.Equal(3, authors.TotalCount);
 
         }
     }

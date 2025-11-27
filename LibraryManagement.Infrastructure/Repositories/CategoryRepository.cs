@@ -1,5 +1,5 @@
 ﻿using LibraryManagement.Application.Interfaces.Repositories;
-using LibraryManagement.Application.QueryModels.Categories;
+using LibraryManagement.Contract.QueryModels.Categories;
 using LibraryManagement.Domain.Entities;
 using LibraryManagement.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
@@ -28,26 +28,7 @@ public class CategoryRepository: ICategoryRepository
         await _context.SaveChangesAsync(cancellationToken);
         return category;
     }
-    /*
-    public async Task<Category> UpdateAsync(Category category, CancellationToken cancellationToken = default)
-    {
-        _context.Categories.Update(category);
-        await _context.SaveChangesAsync(cancellationToken);
-        return category;
-    }
-
-    public async Task<Category> DeleteAsync(Category category, CancellationToken cancellationToken = default)
-    {
-        _context.Categories.Remove(category);
-        await _context.SaveChangesAsync();
-        return category;
-    }
-
-    public async Task<ICollection<Category>> GetAllAsync(CancellationToken cancellationToken = default)
-    {
-        return await _context.Categories.ToListAsync(cancellationToken);
-    }
-    */
+  
     public async Task<IEnumerable<Category>> GetCategoryTreeAsync(bool includeInactive, CancellationToken cancellationToken = default)
     {
         var categories = await _context.Categories
