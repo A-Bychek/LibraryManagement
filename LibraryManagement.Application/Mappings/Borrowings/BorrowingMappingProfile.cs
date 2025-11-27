@@ -1,6 +1,7 @@
 using AutoMapper;
 using LibraryManagement.Application.DTOs.Borrowings;
 using LibraryManagement.Application.Interfaces.Services;
+using LibraryManagement.Contract.Commands.Borrowing;
 using LibraryManagement.Domain.Entities;
 
 namespace LibraryManagement.Application.Mappings.Borrowings;
@@ -22,5 +23,6 @@ public class BorrowingMappingProfile : Profile
                 opt => opt.MapFrom(src => src.ReturnDate.HasValue
                     ? src.ReturnDate.Value.ToString("yyyy-MM-dd")
                     : string.Empty));
+        CreateMap<BorrowBookCommand, Borrowing>();
     }
 }

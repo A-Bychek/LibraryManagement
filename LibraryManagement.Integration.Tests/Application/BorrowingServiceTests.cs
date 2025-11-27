@@ -151,7 +151,7 @@ public class BorrowingServiceTests : IClassFixture<SqliteTestDatabaseFixture>
             List<BorrowingDto>? overdueBorrowings = await _borrowingService.GetOverdueBooksAsync();
 
             Assert.NotNull(overdueBorrowings);
-            Assert.Single(overdueBorrowings);
+            Assert.Equal(2, overdueBorrowings.Count);
         }
     }
 

@@ -79,20 +79,15 @@ public class GrpcBookService : BookService.BookServiceBase
         {
             var searchBookCommand = _mapper.Map<BookSearchArgs>(request);
 
-            var Books = await _BookService.GetBooksAsync(searchBookCommand, context.CancellationToken);
+            var books = await _BookService.GetBooksAsync(searchBookCommand, context.CancellationToken);
 
-            var mappedBooks = Books.Items.Select(_mapper.Map<BookResponse>);
+            var mappedBooks = books.Items.Select(_mapper.Map<BookResponse>);
 
-            var BookResponse = new BookListResponse
-            {
-                TotalCount = Books.TotalCount,
-                PageNumber = Books.PageNumber,
-                PageSize = Books.PageSize
-            };
+            var bookResponse = _mapper.Map<BookListResponse>(books);
 
-            BookResponse.Books.AddRange(mappedBooks);
-            _logger.Information($"{Books.TotalCount} Books have been found.");
-            return BookResponse;
+            bookResponse.Books.AddRange(mappedBooks);
+            _logger.Information($"{books.TotalCount} Books have been found.");
+            return bookResponse;
         }
         catch (ValidationException exc)
         {

@@ -54,15 +54,14 @@ public class CategoryServiceTests : IClassFixture<SqliteTestDatabaseFixture>
             ICategoryService _categoryService = _fixture.Container.GetInstance<ICategoryService>();
             CategorySearchArgs args = new CategorySearchArgs
             {
-                SearchTerm = "Test",
+                SearchTerm = "Category 2",
                 IsActive = true,
             };
 
             List<CategoryDto>? categories = await _categoryService.GetCategoriesAsync(args);
 
             Assert.NotNull(categories);
-            Assert.Equal(4, categories.Count);
-
+            Assert.Single(categories);
         }
     }
     
@@ -100,6 +99,20 @@ public class CategoryServiceTests : IClassFixture<SqliteTestDatabaseFixture>
             {
                 await _categoryService.CreateCategoryAsync(createCategoryCommand);
             });
+        }
+    }
+
+    [Fact]
+    public async Task GetCategoryTreeAsync_IfRequestIsValid_ShouldReturnEntities()
+    {
+        using (AsyncScopedLifestyle.BeginScope(_fixture.Container))
+        {
+            ICategoryService _categoryService = _fixture.Container.GetInstance<ICategoryService>();
+
+            List<CategoryDto>? categories = await _categoryService.GetCategoryTreeAsync(true);
+
+            Assert.NotNull(categories);
+            Assert.Equal(4, categories.Count);
         }
     }
 }

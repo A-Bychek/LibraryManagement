@@ -54,16 +54,7 @@ public class BookService : IBookService
     public async Task<BookDto> CreateBookAsync(CreateBookCommand createBookCommand, CancellationToken cancellationToken = default)
     {
         await _createBookCommandValidator.ValidateAndThrowAsync(createBookCommand, cancellationToken);
-        var book = new Book()
-        {
-            Title = createBookCommand.Title,
-            ISBN = createBookCommand.ISBN,
-            Description = createBookCommand.Description,
-            AuthorId = createBookCommand.AuthorId,
-            CategoryId = createBookCommand.CategoryId,
-            PublishedDate = DateTime.Parse(createBookCommand.PublishedDate),
-            PageCount = createBookCommand.PageCount
-        };
+        var book = _mapper.Map<Book>(createBookCommand);
         await _bookRepository.AddAsync(book, cancellationToken);
         return await GetBookAsync(book.BookId, cancellationToken);
     }
