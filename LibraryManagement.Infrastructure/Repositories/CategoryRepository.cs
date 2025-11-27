@@ -31,13 +31,14 @@ public class CategoryRepository: ICategoryRepository
   
     public async Task<IEnumerable<Category>> GetCategoryTreeAsync(bool includeInactive, CancellationToken cancellationToken = default)
     {
-        var categories = await _context.Categories
-            .Include(x => x.Books)
-            .Where(x => x.IsActive == includeInactive)
-            .AsNoTracking()
-            .OrderBy(x => x.SortOrder)
-            .ThenBy(x => x.Name)
-            .ToListAsync(cancellationToken);
+        var categories = await _context.Categories.Include(x => x.Books).OrderBy(s => s.CategoryId).ToListAsync();
+        foreach (var category in categories)
+        {
+            if (category?.ParentCategoryId > 0)
+            {
+                category.SubCategories = [.. categories.Where(x => x.ParentCategoryId == category.CategoryId)];
+            }
+        }
         return categories;
     }
 
@@ -46,8 +47,15 @@ public class CategoryRepository: ICategoryRepository
         var query = _context.Categories
             .Include(c => c.ParentCategory)
             .Include(c => c.Books)
-            .AsNoTracking()
             .AsQueryable();
+
+        foreach (var category in query)
+        {
+            if (category.ParentCategoryId > 0)
+            {
+                category.SubCategories = [.. query.Where(x => x.ParentCategoryId == category.CategoryId)];
+            }
+        }
 
         if (!string.IsNullOrWhiteSpace(categorySearchArgs.SearchTerm))
         {

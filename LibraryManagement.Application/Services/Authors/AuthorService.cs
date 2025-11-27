@@ -53,13 +53,7 @@ public class AuthorService : IAuthorService
     public async Task<AuthorDto> CreateAuthorAsync(CreateAuthorCommand createAuthorCommand, CancellationToken cancellationToken = default)
     {
         await _createAuthorCommandValidator.ValidateAndThrowAsync(createAuthorCommand, cancellationToken);
-        var author = new Author()
-        {
-            FirstName = createAuthorCommand.FirstName,
-            LastName = createAuthorCommand.LastName,
-            Biography = createAuthorCommand.Biography,
-            DateOfBirth = DateTime.Parse(createAuthorCommand.DateOfBirth) // to mapper
-        };
+        var author = _mapper.Map<Author>(createAuthorCommand);
         await _authorRepository.AddAsync(author, cancellationToken);
         return _mapper.Map<AuthorDto>(author);
     }
@@ -87,7 +81,7 @@ public class AuthorService : IAuthorService
     public async Task<DeleteAuthorDto> DeleteAuthorAsync(long authorId, CancellationToken cancellationToken = default)
     {
         Author? author = await _authorRepository.GetByIdAsync(authorId, cancellationToken) 
-            ?? throw new NotFoundException($"Can't find a {authorId} author!"); 
+            ?? throw new NotFoundException($"Can't find the author with {authorId} authorId!"); 
         await _authorRepository.DeleteAsync(author, cancellationToken);
         return new DeleteAuthorDto
         {

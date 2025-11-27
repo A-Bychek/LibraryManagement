@@ -54,14 +54,7 @@ public class BorrowingService: IBorrowingService
         DateTime borrowDate = DateTime.UtcNow;
         DateTime dueDate = borrowDate.AddDays(borrowBookCommand.DaysToReturn <= 0 ? 14 : borrowBookCommand.DaysToReturn);
 
-        var borrowing = new Borrowing(
-            borrowBookCommand.BookId, 
-            borrowBookCommand.UserId,   
-            borrowDate,
-            dueDate, 
-            null, 
-            BorrowingStatus.Active
-            );
+        var borrowing = _mapper.Map<Borrowing>(borrowBookCommand);
 
         book.IsAvailable = false;
 

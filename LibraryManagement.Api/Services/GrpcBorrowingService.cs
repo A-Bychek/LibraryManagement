@@ -81,12 +81,7 @@ public class GrpcBorrowingService : BorrowingService.BorrowingServiceBase
 
             var mappedBorrowings = borrowings.Items.Select(_mapper.Map<BorrowingResponse>);
 
-            var borrowingResponse = new BorrowingListResponse
-            {
-                TotalCount = borrowings.TotalCount,
-                PageNumber = borrowings.PageNumber,
-                PageSize = borrowings.PageSize
-            };
+            var borrowingResponse = _mapper.Map<BorrowingListResponse>(borrowings);
 
             borrowingResponse.Borrowings.AddRange(mappedBorrowings);
             _logger.Information($"{borrowings.TotalCount} Borrowings have been found.");
@@ -113,12 +108,7 @@ public class GrpcBorrowingService : BorrowingService.BorrowingServiceBase
 
             var mappedOverdueBooks = overdueBooks.Select(_mapper.Map<BorrowingResponse>);
 
-            var borrowingResponse = new BorrowingListResponse
-            {
-                TotalCount = overdueBooks.Count(),
-                PageNumber = overdueBooksRequest.PageNumber,
-                PageSize = overdueBooksRequest.PageSize
-            };
+            var borrowingResponse = _mapper.Map<BorrowingListResponse>(overdueBooksRequest, opt => opt.AfterMap((src, dest) => dest.TotalCount = overdueBooks.Count));
 
             borrowingResponse.Borrowings.AddRange(mappedOverdueBooks);
             _logger.Information($"{borrowingResponse.TotalCount} Borrowings have been found.");

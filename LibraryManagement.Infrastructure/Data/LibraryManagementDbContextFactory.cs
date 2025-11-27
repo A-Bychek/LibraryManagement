@@ -13,8 +13,7 @@ public class LibraryManagementDbContextFactory : IDesignTimeDbContextFactory<Lib
             .AddJsonFile("appsettings.json", optional: true)
             .Build();
 
-        var connectionString = configuration.GetConnectionString("DefaultConnection")
-                               ?? "Data Source=test.db";
+        var connectionString = configuration.GetConnectionString("DefaultConnection");
 
         var optionsBuilder = new DbContextOptionsBuilder<LibraryManagementDbContext>();
         optionsBuilder.UseSqlite(connectionString);

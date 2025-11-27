@@ -46,7 +46,7 @@ public class SqliteTestDatabaseFixture : IAsyncLifetime
         using (AsyncScopedLifestyle.BeginScope(Container))
         {
             var context = Container.GetInstance<LibraryManagementDbContext>();
-            await context.Database.MigrateAsync();
+            await context.Database.EnsureCreatedAsync();
             await SeedTestDataAsync(context);
         }
         Container.Verify();
