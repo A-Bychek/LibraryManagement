@@ -12,5 +12,5 @@ public class BookDto
     public string CategoryName { get; set; } // Category?
     public string PublishedDate { get; set; } // ISO 8601 format?
     public int? PageCount { get; set; }
-    public bool? IsAvailable { get; set; }
+    public bool IsAvailable { get; set; }
 }

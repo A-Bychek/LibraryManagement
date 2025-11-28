@@ -83,9 +83,8 @@ public class GrpcAuthorService: AuthorService.AuthorServiceBase
 
             var mappedAuthors = authors.Items.Select(_mapper.Map<AuthorResponse>);
 
-            var authorResponse = _mapper.Map<AuthorListResponse>(authors);
+            var authorResponse = _mapper.Map<AuthorListResponse>(authors, opt => opt.AfterMap((src, dest) => dest.Authors.AddRange(mappedAuthors)));
 
-            authorResponse.Authors.AddRange(mappedAuthors);
             _logger.Information($"{authors.TotalCount} authors have been found.");
             return authorResponse;
         }
