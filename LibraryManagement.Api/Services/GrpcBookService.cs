@@ -3,9 +3,11 @@ using FluentValidation;
 using Grpc.Core;
 using LibraryManagement.Application.DTOs.Books;
 using LibraryManagement.Application.Interfaces.Services;
+using LibraryManagement.Contract.Authors;
 using LibraryManagement.Contract.Books;
 using LibraryManagement.Contract.Commands.Book;
 using LibraryManagement.Contract.QueryModels.Books;
+using LibraryManagement.Domain.Entities;
 using LibraryManagement.Shared.Exceptions;
 using Serilog;
 
@@ -83,9 +85,8 @@ public class GrpcBookService : BookService.BookServiceBase
 
             var mappedBooks = books.Items.Select(_mapper.Map<BookResponse>);
 
-            var bookResponse = _mapper.Map<BookListResponse>(books);
+            var bookResponse = _mapper.Map<BookListResponse>(books, opt => opt.AfterMap((src, dest) => dest.Books.AddRange(mappedBooks)));
 
-            bookResponse.Books.AddRange(mappedBooks);
             _logger.Information($"{books.TotalCount} Books have been found.");
             return bookResponse;
         }
