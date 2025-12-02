@@ -1,4 +1,5 @@
 using LibraryManagement.Api;
+using LibraryManagement.Api.Interceptors;
 using LibraryManagement.Api.Services;
 using LibraryManagement.Contract;
 using LibraryManagement.Infrastructure;
@@ -42,7 +43,10 @@ builder.Services.AddScoped<GrpcBookService>(sp => container.GetInstance<GrpcBook
 builder.Services.AddScoped<GrpcBorrowingService>(sp => container.GetInstance<GrpcBorrowingService>());
 builder.Services.AddScoped<GrpcCategoryService>(sp => container.GetInstance<GrpcCategoryService>());
 
-builder.Services.AddGrpc();
+builder.Services.AddGrpc(options =>
+    {
+    options.Interceptors.Add<ExceptionHandlingInterceptor>();
+    });
 
 var app = builder.Build();
 

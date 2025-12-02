@@ -1,4 +1,5 @@
 ﻿using LibraryManagement.Api;
+using LibraryManagement.Api.Interceptors;
 using LibraryManagement.Contract;
 using LibraryManagement.Domain.Entities;
 using LibraryManagement.Domain.Enums;
@@ -22,7 +23,7 @@ public class SqliteTestDatabaseFixture : IAsyncLifetime
         Container = new Container();
 
         Container.Options.DefaultScopedLifestyle = new AsyncScopedLifestyle();
-
+        
         _sqliteConnection = new SqliteConnection("DataSource=:memory:");
         await _sqliteConnection.OpenAsync();
 
@@ -42,6 +43,8 @@ public class SqliteTestDatabaseFixture : IAsyncLifetime
                 builder.SetMinimumLevel(LogLevel.Debug);
             });
         });
+
+        Container.Register<ExceptionHandlingInterceptor>(Lifestyle.Singleton);
 
         using (AsyncScopedLifestyle.BeginScope(Container))
         {

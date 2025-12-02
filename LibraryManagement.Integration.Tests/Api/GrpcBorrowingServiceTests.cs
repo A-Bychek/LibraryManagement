@@ -2,14 +2,15 @@
 using Grpc.Core;
 using LibraryManagement.Api.Mappings;
 using LibraryManagement.Api.Services;
+using LibraryManagement.Contract.Commands.Borrowing;
 using LibraryManagement.Application.DTOs.Borrowings;
 using LibraryManagement.Application.Interfaces.Services;
-using LibraryManagement.Contract.Borrowings;
-using LibraryManagement.Contract.Commands.Borrowing;
 using LibraryManagement.Contract.QueryModels.Borrowings;
+using LibraryManagement.Contract.Borrowings;
 using LibraryManagement.Shared;
 using Microsoft.Extensions.Logging;
 using Moq;
+using LibraryManagement.Api.Interceptors;
 
 namespace LibraryManagement.Integration.Tests.Api;
 
@@ -18,6 +19,7 @@ public class GrpcBorrowingServiceTests
     private readonly Mock<IBorrowingService> _borrowingServiceMock;
     private readonly IMapper _mapper;
     private readonly GrpcBorrowingService _grpcBorrowingService;
+    private readonly ExceptionHandlingInterceptor _interceptor;
 
     public GrpcBorrowingServiceTests()
     {
@@ -33,6 +35,7 @@ public class GrpcBorrowingServiceTests
         config.AssertConfigurationIsValid();
 
         _grpcBorrowingService = new GrpcBorrowingService(_borrowingServiceMock.Object, _mapper);
+        _interceptor = new ExceptionHandlingInterceptor();
     }
 
     [Fact]
@@ -80,9 +83,9 @@ public class GrpcBorrowingServiceTests
             .ThrowsAsync(new Exception("Unknown issue"));
         BorrowBookRequest request = new BorrowBookRequest();
         RpcException grpcException = await Assert.ThrowsAsync<RpcException>(() =>
-            _grpcBorrowingService.BorrowBook(request, context));
+            _interceptor.UnaryServerHandler(request, context, _grpcBorrowingService.BorrowBook));
 
-        Assert.Equal(StatusCode.Unknown, grpcException.StatusCode);
+        Assert.Equal("Unknown error: Unknown issue", grpcException.Status.Detail);
 
         _borrowingServiceMock.Verify(s => s.BorrowBookAsync(It.IsAny<BorrowBookCommand>(), context.CancellationToken),
             Times.Once);
@@ -138,9 +141,9 @@ public class GrpcBorrowingServiceTests
             .ThrowsAsync(new Exception("Unknown issue"));
 
         RpcException grpcException = await Assert.ThrowsAsync<RpcException>(() =>
-            _grpcBorrowingService.ReturnBook(returnBookRequest, context));
+            _interceptor.UnaryServerHandler(returnBookRequest, context, _grpcBorrowingService.ReturnBook));
 
-        Assert.Equal(StatusCode.Unknown, grpcException.StatusCode);
+        Assert.Equal("Unknown error: Unknown issue", grpcException.Status.Detail);
     }
 
     [Fact]
@@ -198,9 +201,9 @@ public class GrpcBorrowingServiceTests
             .ThrowsAsync(new Exception("Unknown issue"));
 
         RpcException grpcException = await Assert.ThrowsAsync<RpcException>(() =>
-            _grpcBorrowingService.GetUserBorrowings(userBorrowingsRequest, context));
+            _interceptor.UnaryServerHandler(userBorrowingsRequest, context, _grpcBorrowingService.GetUserBorrowings));
 
-        Assert.Equal(StatusCode.Unknown, grpcException.StatusCode);
+        Assert.Equal("Unknown error: Unknown issue", grpcException.Status.Detail);
     }
 
     [Fact]
@@ -257,8 +260,8 @@ public class GrpcBorrowingServiceTests
             .ThrowsAsync(new Exception("Unknown issue"));
 
         RpcException grpcException = await Assert.ThrowsAsync<RpcException>(() =>
-            _grpcBorrowingService.GetOverdueBooks(overdueBooksRequest, context));
+            _interceptor.UnaryServerHandler(overdueBooksRequest, context, _grpcBorrowingService.GetOverdueBooks));
 
-        Assert.Equal(StatusCode.Unknown, grpcException.StatusCode);
+        Assert.Equal("Unknown error: Unknown issue", grpcException.Status.Detail);
     }
 }
