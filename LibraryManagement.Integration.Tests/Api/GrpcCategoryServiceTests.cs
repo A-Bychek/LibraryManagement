@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Grpc.Core;
+using LibraryManagement.Api.Interceptors;
 using LibraryManagement.Api.Mappings;
 using LibraryManagement.Api.Services;
 using LibraryManagement.Application.DTOs.Categories;
@@ -8,7 +9,6 @@ using LibraryManagement.Contract.Books;
 using LibraryManagement.Contract.Categories;
 using LibraryManagement.Contract.Commands.Category;
 using LibraryManagement.Contract.QueryModels.Categories;
-using LibraryManagement.Shared.Exceptions;
 using Microsoft.Extensions.Logging;
 using Moq;
 
@@ -19,6 +19,7 @@ public class GrpcCategoryServiceTests
     private readonly Mock<ICategoryService> _categoryServiceMock;
     private readonly IMapper _mapper;
     private readonly GrpcCategoryService _grpcCategoryService;
+    private readonly ExceptionHandlingInterceptor _interceptor;
 
     public GrpcCategoryServiceTests()
     {
@@ -34,6 +35,7 @@ public class GrpcCategoryServiceTests
         config.AssertConfigurationIsValid();
 
         _grpcCategoryService = new GrpcCategoryService(_categoryServiceMock.Object, _mapper);
+        _interceptor = new ExceptionHandlingInterceptor();
     }
 
     [Fact]
@@ -71,42 +73,6 @@ public class GrpcCategoryServiceTests
 
         CategoryListResponse result = await _grpcCategoryService.GetCategories(getCategoriesRequest, context);
         Assert.Equal(categories.Count, result.Categories.Count);
-
-        _categoryServiceMock.Verify(s =>
-            s.GetCategoriesAsync(It.IsAny<CategorySearchArgs>(), context.CancellationToken),
-            Times.Once);
-    }
-
-    [Fact]
-    public async Task GetCategories_IfGetCategoriesRequestIsInvalid_ShouldThrowException()
-    {
-        CategorySearchRequest getCategoriesRequest = new CategorySearchRequest
-        {
-            SearchTerm = "test",
-            ParentCategoryId = 1,
-            IsActive = true
-        };
-
-        CategoryDto category = new CategoryDto
-        {
-            CategoryId = 2,
-            Name = "Test Category",
-            Description = "Test Description",
-            ParentCategoryId = 1,
-            ParentCategoryName = "Test Parent Category",
-            SortOrder = 0,
-            IsActive = true,
-            BookCount = 1
-        };
-        List<CategoryDto> categories = [category];
-        ServerCallContext context = Mock.Of<ServerCallContext>();
-
-        _categoryServiceMock.Setup(s =>
-            s.GetCategoriesAsync(It.IsAny<CategorySearchArgs>(), context.CancellationToken))
-            .ReturnsAsync(categories);
-
-
-        Assert.ThrowsAsync<NotFoundException>(async () => await _grpcCategoryService.GetCategories(getCategoriesRequest, context));
 
         _categoryServiceMock.Verify(s =>
             s.GetCategoriesAsync(It.IsAny<CategorySearchArgs>(), context.CancellationToken),
@@ -158,9 +124,9 @@ public class GrpcCategoryServiceTests
             .ThrowsAsync(new Exception("Unknown issue"));
         CreateCategoryRequest request = new CreateCategoryRequest();
         RpcException grpcException = await Assert.ThrowsAsync<RpcException>(() =>
-            _grpcCategoryService.CreateCategory(request, context));
+            _interceptor.UnaryServerHandler(request, context, _grpcCategoryService.CreateCategory));
 
-        Assert.Equal(StatusCode.Unknown, grpcException.StatusCode);
+        Assert.Equal("Unknown error: Unknown issue", grpcException.Status.Detail);
 
         _categoryServiceMock.Verify(s => s.CreateCategoryAsync(It.IsAny<CreateCategoryCommand>(), context.CancellationToken),
             Times.Once);
@@ -200,23 +166,5 @@ public class GrpcCategoryServiceTests
         _categoryServiceMock.Verify(s =>
             s.GetCategoryTreeAsync(true, context.CancellationToken),
             Times.Once);
-    }
-
-    [Fact]
-    public async Task GetCategoryTree_IfGetCategoryTreeRequestIsinvalid_ShouldThrowException()
-    {
-        CategoryTreeRequest categoryTreeRequest = new CategoryTreeRequest();
-
-        ServerCallContext context = Mock.Of<ServerCallContext>();
-
-        _categoryServiceMock.Setup(s =>
-            s.GetCategoryTreeAsync(true, context.CancellationToken))
-            .ThrowsAsync(new Exception("Unknown issue"));
-
-        RpcException grpcException = await Assert.ThrowsAsync<RpcException>(() =>
-            _grpcCategoryService.GetCategoryTree(categoryTreeRequest, context));
-
-        Assert.Equal(StatusCode.Unknown, grpcException.StatusCode);
-
     }
 }

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Grpc.Core;
+using LibraryManagement.Api.Interceptors;
 using LibraryManagement.Api.Mappings;
 using LibraryManagement.Api.Services;
 using LibraryManagement.Application.DTOs.Books;
@@ -19,6 +20,7 @@ public class GrpcBookServiceTests
     private readonly Mock<IBookService> _bookServiceMock;
     private readonly IMapper _mapper;
     private readonly GrpcBookService _grpcBookService;
+    private readonly ExceptionHandlingInterceptor _interceptor;
 
     public GrpcBookServiceTests()
     {
@@ -34,6 +36,7 @@ public class GrpcBookServiceTests
         config.AssertConfigurationIsValid();
 
         _grpcBookService = new GrpcBookService(_bookServiceMock.Object, _mapper);
+        _interceptor = new ExceptionHandlingInterceptor();
     }
 
     [Fact]
@@ -158,9 +161,9 @@ public class GrpcBookServiceTests
             .ThrowsAsync(new Exception("Unknown issue"));
         CreateBookRequest request = new CreateBookRequest();
         RpcException grpcException = await Assert.ThrowsAsync<RpcException>(() =>
-            _grpcBookService.CreateBook(request, context));
+            _interceptor.UnaryServerHandler(request, context, _grpcBookService.CreateBook));
 
-        Assert.Equal(StatusCode.Unknown, grpcException.StatusCode);
+        Assert.Equal("Unknown error: Unknown issue", grpcException.Status.Detail);
 
         _bookServiceMock.Verify(s => s.CreateBookAsync(It.IsAny<CreateBookCommand>(), context.CancellationToken),
             Times.Once);
@@ -228,9 +231,9 @@ public class GrpcBookServiceTests
             .ThrowsAsync(new Exception("Unknown issue"));
 
         RpcException grpcException = await Assert.ThrowsAsync<RpcException>(() =>
-            _grpcBookService.UpdateBook(updateBookRequest, context));
+            _interceptor.UnaryServerHandler(updateBookRequest, context, _grpcBookService.UpdateBook));
 
-        Assert.Equal(StatusCode.Unknown, grpcException.StatusCode);
+        Assert.Equal("Unknown error: Unknown issue", grpcException.Status.Detail);
     }
 
     [Fact]

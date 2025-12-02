@@ -46,7 +46,7 @@ public class AuthorService : IAuthorService
 
     public async Task<AuthorDto> GetAuthorAsync(long authorId, CancellationToken cancellationToken = default)
     {
-        var author = await _authorRepository.GetByIdAsync(authorId, cancellationToken) ?? throw new NotFoundException($"Can't find a {authorId} author!");
+        var author = await _authorRepository.GetByIdAsync(authorId, cancellationToken) ?? throw new NotFoundException($"Can't find the author with {authorId} authorId!");
         return _mapper.Map<AuthorDto>(author);
     }
 

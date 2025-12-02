@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Grpc.Core;
+using LibraryManagement.Api.Interceptors;
 using LibraryManagement.Api.Mappings;
 using LibraryManagement.Api.Services;
 using LibraryManagement.Application.DTOs.Authors;
@@ -8,7 +9,6 @@ using LibraryManagement.Contract.Authors;
 using LibraryManagement.Contract.Commands.Author;
 using LibraryManagement.Contract.QueryModels.Authors;
 using LibraryManagement.Shared;
-using LibraryManagement.Shared.Exceptions;
 using Microsoft.Extensions.Logging;
 using Moq;
 
@@ -19,6 +19,7 @@ public class GrpcAuthorServiceTests
     private readonly Mock<IAuthorService> _authorServiceMock;
     private readonly IMapper _mapper;
     private readonly GrpcAuthorService _grpcAuthorService;
+    private readonly ExceptionHandlingInterceptor _interceptor;
 
     public GrpcAuthorServiceTests()
     {
@@ -34,6 +35,7 @@ public class GrpcAuthorServiceTests
         config.AssertConfigurationIsValid();
 
         _grpcAuthorService = new GrpcAuthorService(_authorServiceMock.Object, _mapper);
+        _interceptor = new ExceptionHandlingInterceptor();
     }
 
     [Fact]
@@ -90,10 +92,11 @@ public class GrpcAuthorServiceTests
         AuthorGetRequest request = new AuthorGetRequest
         {
             AuthorId = 11
-        };  
+        };
 
-        Assert.ThrowsAsync<NotFoundException>(async () => await _grpcAuthorService.GetAuthor(request, context));
-        
+        await Assert.ThrowsAsync<RpcException>
+            (async () => await _interceptor.UnaryServerHandler(request, context, _grpcAuthorService.GetAuthor));
+
         _authorServiceMock.Verify(s =>
             s.GetAuthorAsync(11, context.CancellationToken),
             Times.Once);
@@ -142,10 +145,10 @@ public class GrpcAuthorServiceTests
         _authorServiceMock.Setup(s => s.CreateAuthorAsync(It.IsAny<CreateAuthorCommand>(), context.CancellationToken))
             .ThrowsAsync(new Exception("Unknown issue"));
         CreateAuthorRequest request = new CreateAuthorRequest();
-        RpcException grpcException = await Assert.ThrowsAsync<RpcException>(() =>
-            _grpcAuthorService.CreateAuthor(request, context));
+        RpcException exception = await Assert.ThrowsAsync<RpcException>(() =>
+            _interceptor.UnaryServerHandler(request, context, _grpcAuthorService.CreateAuthor));
 
-        Assert.Equal(StatusCode.Unknown, grpcException.StatusCode);
+        Assert.Equal("Unknown error: Unknown issue", exception.Status.Detail);
 
         _authorServiceMock.Verify(s => s.CreateAuthorAsync(It.IsAny<CreateAuthorCommand>(), context.CancellationToken),
             Times.Once);
@@ -208,10 +211,10 @@ public class GrpcAuthorServiceTests
             s.UpdateAuthorAsync(It.IsAny<UpdateAuthorCommand>(), context.CancellationToken))
             .ThrowsAsync(new Exception("Unknown issue"));
 
-        RpcException grpcException = await Assert.ThrowsAsync<RpcException>(() =>
-            _grpcAuthorService.UpdateAuthor(updateAuthorRequest, context));
+        RpcException exception = await Assert.ThrowsAsync<RpcException>(() =>
+            _interceptor.UnaryServerHandler(updateAuthorRequest, context, _grpcAuthorService.UpdateAuthor));
 
-        Assert.Equal(StatusCode.Unknown, grpcException.StatusCode);
+        Assert.Equal("Unknown error: Unknown issue", exception.Status.Detail);
     }
 
     [Fact]
@@ -245,42 +248,6 @@ public class GrpcAuthorServiceTests
 
         AuthorListResponse result = await _grpcAuthorService.GetAuthors(authorSearchRequest, context);
         Assert.Equal(authors.TotalCount, result.TotalCount);
-
-        _authorServiceMock.Verify(s =>
-            s.GetAuthorsAsync(It.IsAny<AuthorSearchArgs>(), context.CancellationToken),
-            Times.Once);
-    }
-
-    [Fact]
-    public async Task GetAuthors_IfAuthorSearchRequestIsInvalid_ShouldThrowException()
-    {
-        AuthorDto author = new AuthorDto
-        {
-            AuthorId = 1,
-            FirstName = "Max",
-            LastName = "Payne",
-            Biography = "Max Payne Bio",
-            DateOfBirth = "2000-12-31",
-            IsActive = true,
-            BookCount = 1
-        };
-        PagedResult<AuthorDto> authors = PagedResult<AuthorDto>.Create([author], 1, 1, 15);
-
-        ServerCallContext context = Mock.Of<ServerCallContext>();
-
-        _authorServiceMock.Setup(s =>
-            s.GetAuthorsAsync(It.IsAny<AuthorSearchArgs>(), context.CancellationToken))
-            .ReturnsAsync(authors);
-
-        AuthorSearchRequest authorSearchRequest = new AuthorSearchRequest
-        {
-            SearchTerm = "Max",
-            IsActive = true,
-            PageNumber = 1,
-            PageSize = 15
-        };
-
-        Assert.ThrowsAsync<NotFoundException>(async () => await _grpcAuthorService.GetAuthors(authorSearchRequest, context));
 
         _authorServiceMock.Verify(s =>
             s.GetAuthorsAsync(It.IsAny<AuthorSearchArgs>(), context.CancellationToken),
