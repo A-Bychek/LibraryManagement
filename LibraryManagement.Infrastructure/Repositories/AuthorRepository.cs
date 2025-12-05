@@ -61,10 +61,13 @@ public class AuthorRepository: IAuthorRepository
         {
             var searchTerm = authorSearchArgs.SearchTerm.ToLower();
             query = query.Where(x =>
-                EF.Functions.Like(x.FirstName, $"%{searchTerm}%") || EF.Functions.Like(x.LastName, $"%{searchTerm}%"));
+                EF.Functions.Like(x.FirstName.ToLower(), $"{searchTerm}%") || EF.Functions.Like(x.LastName.ToLower(), $"{searchTerm}%"));
         }
-        // TODO check the IsActive logic
-        query = query.Where(x => x.IsActive == authorSearchArgs.IsActive.Value);
+
+        if (authorSearchArgs.IsActive.HasValue)
+        {
+            query = query.Where(x => x.IsActive == authorSearchArgs.IsActive.Value);
+        }
 
         var totalCount = await query.CountAsync(cancellationToken);
 

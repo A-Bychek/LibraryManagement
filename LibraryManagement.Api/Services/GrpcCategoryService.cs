@@ -24,41 +24,34 @@ public class GrpcCategoryService : CategoryService.CategoryServiceBase
 
     public override async Task<CategoryListResponse> GetCategories(CategorySearchRequest request, ServerCallContext context)
     {
-        {
-            var categorySearchArgs = _mapper.Map<CategorySearchArgs>(request);
+        var categorySearchArgs = _mapper.Map<CategorySearchArgs>(request);
 
-            var categories = await _categoryService.GetCategoriesAsync(categorySearchArgs, context.CancellationToken);
-            var mappedCategories = new CategoryListResponse();
-            mappedCategories.Categories.AddRange(categories.Select(_mapper.Map<CategoryResponse>));
-            return mappedCategories;
-        }
+        var categories = await _categoryService.GetCategoriesAsync(categorySearchArgs, context.CancellationToken);
+        var mappedCategories = new CategoryListResponse();
+        mappedCategories.Categories.AddRange(categories.Select(_mapper.Map<CategoryResponse>));
+        return mappedCategories;
     }
 
     public override async Task<CategoryResponse> CreateCategory(CreateCategoryRequest createCategoryRequest, ServerCallContext context)
     {
-        {
-            var createCategoryCommand = _mapper.Map<CreateCategoryCommand>(createCategoryRequest);
+        var createCategoryCommand = _mapper.Map<CreateCategoryCommand>(createCategoryRequest);
 
-            var category = await _categoryService.CreateCategoryAsync(createCategoryCommand, context.CancellationToken);
+        var category = await _categoryService.CreateCategoryAsync(createCategoryCommand, context.CancellationToken);
             
-            _logger.Information($"Category entity has been created: ID: {category.CategoryId}," +
-                $"Name: {category.Name}, Description: {category.Description}, Parent category ID {category.ParentCategoryId}," +
-                $"parent category name: {category.ParentCategoryName}, isActive: {category.IsActive}");
-            return _mapper.Map<CategoryResponse>(category);
-        }
+        _logger.Information($"Category entity has been created: ID: {category.CategoryId}," +
+            $"Name: {category.Name}, Description: {category.Description}, Parent category ID {category.ParentCategoryId}," +
+            $"parent category name: {category.ParentCategoryName}, isActive: {category.IsActive}");
+        return _mapper.Map<CategoryResponse>(category);
     }
 
     public override async Task<CategoryTreeResponse> GetCategoryTree(CategoryTreeRequest request, ServerCallContext context)
     {
-        {
+        var categories = await _categoryService.GetCategoryTreeAsync(request.IncludeInactive, context.CancellationToken);
 
-            var categories = await _categoryService.GetCategoryTreeAsync(request.IncludeInactive, context.CancellationToken);
+        CategoryTreeResponse mappedCategories = new CategoryTreeResponse();
+        mappedCategories.Categories.AddRange(categories.Select(x => _mapper.Map<CategoryResponse>(x)));
 
-            CategoryTreeResponse mappedCategories = new CategoryTreeResponse();
-            mappedCategories.Categories.AddRange(categories.Select(x => _mapper.Map<CategoryResponse>(x)));
-
-            _logger.Information($"{categories.Count} categories have been found.");
-            return mappedCategories;
-        }
+        _logger.Information($"{categories.Count} categories have been found.");
+        return mappedCategories;
     }
 }

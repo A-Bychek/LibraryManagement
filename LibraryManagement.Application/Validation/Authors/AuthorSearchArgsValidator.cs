@@ -16,7 +16,7 @@ public class AuthorSearchArgsValidator : AbstractValidator<AuthorSearchArgs>
             .GreaterThanOrEqualTo(1).WithMessage("PageNumber should be positive.").WithErrorCode("422");
 
         RuleFor(x => x.PageSize)
-            .GreaterThanOrEqualTo(1).WithMessage("PageNumber should be positive.").WithErrorCode("422")
+            .GreaterThanOrEqualTo(1).WithMessage("PageSize should be positive.").WithErrorCode("422")
             .LessThanOrEqualTo(50).WithMessage("PageSize cannot be more than 50.").WithErrorCode("422");
     }
 }

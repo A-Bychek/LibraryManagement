@@ -54,8 +54,8 @@ public class CategoryServiceTests : IClassFixture<SqliteTestDatabaseFixture>
             ICategoryService _categoryService = _fixture.Container.GetInstance<ICategoryService>();
             CategorySearchArgs args = new CategorySearchArgs
             {
-                SearchTerm = "Category 2",
-                IsActive = true,
+                SearchTerm = "Test Category 2",
+                IsActive = true
             };
 
             List<CategoryDto>? categories = await _categoryService.GetCategoriesAsync(args);

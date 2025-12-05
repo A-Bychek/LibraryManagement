@@ -76,7 +76,7 @@ public class CategoryService : ICategoryService
             );
         await _categoryRepository.AddAsync(category, cancellationToken);
         category = await _categoryRepository.GetByIdAsync(category.CategoryId, cancellationToken);
-        return _mapper.Map<Category, CategoryDto>(category);
+        return _mapper.Map<CategoryDto>(category);
     }
 
     public async Task<string> GetCategoryStatisticsAsync(long categoryId, CancellationToken cancellationToken = default)

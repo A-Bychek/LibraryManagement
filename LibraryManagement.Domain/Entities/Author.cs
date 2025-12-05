@@ -2,6 +2,16 @@
 
 public class Author
 {
+    public Author() { }
+    public Author(string firstName, string lastName, string biography, DateTime dateOfBirth, bool isActive)
+    { 
+        FirstName = firstName;
+        LastName = lastName;
+        Biography = biography;
+        DateOfBirth = dateOfBirth;
+        IsActive = isActive;
+    }
+
     public long AuthorId { get; set; }
     public string FirstName { get; set; } = null!;
     public string LastName { get; set; } = null!;

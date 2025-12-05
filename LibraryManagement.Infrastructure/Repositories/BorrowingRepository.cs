@@ -14,7 +14,7 @@ public class BorrowingRepository: IBorrowingRepository
         _context = context;
     }
 
-    public async Task<Borrowing> GetByIdAsync(long borrowingId, CancellationToken cancellationToken = default)
+    public async Task<Borrowing?> GetByIdAsync(long borrowingId, CancellationToken cancellationToken = default)
     {
         return await _context.Borrowings
             .FirstOrDefaultAsync(x => x.BorrowingId == borrowingId, cancellationToken);

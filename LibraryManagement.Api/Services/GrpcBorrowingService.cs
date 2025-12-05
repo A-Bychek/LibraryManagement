@@ -24,58 +24,48 @@ public class GrpcBorrowingService : BorrowingService.BorrowingServiceBase
 
     public override async Task<BorrowingResponse> BorrowBook(BorrowBookRequest borrowBooкRequest, ServerCallContext context)
     {
-        {
-            BorrowBookCommand borrowBookCommand = _mapper.Map<BorrowBookCommand>(borrowBooкRequest);
-            BorrowingDto borrowing = await _borrowingService.BorrowBookAsync(borrowBookCommand, context.CancellationToken);
-            _logger.Information($"Book ID: {borrowBookCommand.BookId}, User ID: {borrowBookCommand.UserId}, " +
-                $"days to return: {borrowBookCommand.DaysToReturn}");
+        BorrowBookCommand borrowBookCommand = _mapper.Map<BorrowBookCommand>(borrowBooкRequest);
+        BorrowingDto borrowing = await _borrowingService.BorrowBookAsync(borrowBookCommand, context.CancellationToken);
+        _logger.Information($"Book ID: {borrowBookCommand.BookId}, User ID: {borrowBookCommand.UserId}, " +
+            $"days to return: {borrowBookCommand.DaysToReturn}");
 
-            return _mapper.Map<BorrowingResponse>(borrowing);
-        }        
+        return _mapper.Map<BorrowingResponse>(borrowing);
     }
 
     public override async Task<BorrowingResponse> ReturnBook(ReturnBookRequest returnBookRequest, ServerCallContext context)
     {
-        {
-            ReturnBookCommand returnBookCommand = _mapper.Map<ReturnBookCommand>(returnBookRequest);
-            BorrowingDto borrowing = await _borrowingService.ReturnBookAsync(returnBookCommand, context.CancellationToken);
-            _logger.Information($"Borrowing entity has been returned: ID: {borrowing.BorrowingId}, " +
-                $"borrow date: {borrowing.BorrowDate}, return date: {borrowing.ReturnDate}, fine amount: {borrowing.FineAmount}.");
-            return _mapper.Map<BorrowingResponse>(borrowing);
-        }        
+        ReturnBookCommand returnBookCommand = _mapper.Map<ReturnBookCommand>(returnBookRequest);
+        BorrowingDto borrowing = await _borrowingService.ReturnBookAsync(returnBookCommand, context.CancellationToken);
+        _logger.Information($"Borrowing entity has been returned: ID: {borrowing.BorrowingId}, " +
+            $"borrow date: {borrowing.BorrowDate}, return date: {borrowing.ReturnDate}, fine amount: {borrowing.FineAmount}.");
+        return _mapper.Map<BorrowingResponse>(borrowing);
     }
 
     public override async Task<BorrowingListResponse> GetUserBorrowings(UserBorrowingsRequest userBorrowingsRequest, ServerCallContext context)
     {
-        {
-            BorrowingSearchArgs borrowingSearchArgs = _mapper.Map<BorrowingSearchArgs>(userBorrowingsRequest);
+        BorrowingSearchArgs borrowingSearchArgs = _mapper.Map<BorrowingSearchArgs>(userBorrowingsRequest);
 
-            var borrowings = await _borrowingService.GetUserBorrowingsAsync(borrowingSearchArgs, context.CancellationToken);
+        var borrowings = await _borrowingService.GetUserBorrowingsAsync(borrowingSearchArgs, context.CancellationToken);
 
-            var mappedBorrowings = borrowings.Items.Select(_mapper.Map<BorrowingResponse>);
+        var mappedBorrowings = borrowings.Items.Select(_mapper.Map<BorrowingResponse>);
 
-            var borrowingResponse = _mapper.Map<BorrowingListResponse>(borrowings);
+        var borrowingResponse = _mapper.Map<BorrowingListResponse>(borrowings);
 
-            borrowingResponse.Borrowings.AddRange(mappedBorrowings);
-            _logger.Information($"{borrowings.TotalCount} Borrowings have been found.");
-            return borrowingResponse;
-        }
+        borrowingResponse.Borrowings.AddRange(mappedBorrowings);
+        _logger.Information($"{borrowings.TotalCount} Borrowings have been found.");
+        return borrowingResponse;
     }
 
     public override async Task<BorrowingListResponse> GetOverdueBooks(OverdueBooksRequest overdueBooksRequest, ServerCallContext context)
-    {
-        {
-            
-            var overdueBooks = await _borrowingService.GetOverdueBooksAsync(context.CancellationToken);
+    {            
+        var overdueBooks = await _borrowingService.GetOverdueBooksAsync(context.CancellationToken);
 
-            var mappedOverdueBooks = overdueBooks.Select(_mapper.Map<BorrowingResponse>);
+        var mappedOverdueBooks = overdueBooks.Select(_mapper.Map<BorrowingResponse>);
 
-            var borrowingResponse = _mapper.Map<BorrowingListResponse>(overdueBooksRequest, opt => opt.AfterMap((src, dest) => dest.TotalCount = overdueBooks.Count));
+        var borrowingResponse = _mapper.Map<BorrowingListResponse>(overdueBooksRequest, opt => opt.AfterMap((src, dest) => dest.TotalCount = overdueBooks.Count));
 
-            borrowingResponse.Borrowings.AddRange(mappedOverdueBooks);
-            _logger.Information($"{borrowingResponse.TotalCount} Borrowings have been found.");
-            return borrowingResponse;
-
-        }
+        borrowingResponse.Borrowings.AddRange(mappedOverdueBooks);
+        _logger.Information($"{borrowingResponse.TotalCount} Borrowings have been found.");
+        return borrowingResponse;
     }
 }

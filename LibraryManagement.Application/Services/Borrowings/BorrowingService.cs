@@ -44,14 +44,11 @@ public class BorrowingService: IBorrowingService
     {
         await _borrowBookCommandValidator.ValidateAndThrowAsync(borrowBookCommand, cancellationToken);
 
-        Book book = await _bookRepository.GetByIdAsync(borrowBookCommand.BookId, cancellationToken);
+        Book? book = await _bookRepository.GetByIdAsync(borrowBookCommand.BookId, cancellationToken);
 
-        if (!book.IsAvailable)
-        {
-            throw new NotAvailableException($"Can't borrow the {book.Title} book");
-        }
+        if (book is  null || !book.IsAvailable) { throw new NotAvailableException($"Can't borrow the book with {borrowBookCommand.BookId} bookId"); }
 
-        DateTime borrowDate = DateTime.UtcNow;
+        DateTime borrowDate = DateTime.Today;
         DateTime dueDate = borrowDate.AddDays(borrowBookCommand.DaysToReturn <= 0 ? 14 : borrowBookCommand.DaysToReturn);
 
         var borrowing = _mapper.Map<Borrowing>(borrowBookCommand);
@@ -76,7 +73,7 @@ public class BorrowingService: IBorrowingService
         if (borrowing.Status == BorrowingStatus.Active || borrowing.Status == BorrowingStatus.Overdue)
         {
             borrowing.Status = BorrowingStatus.Returned;
-            borrowing.ReturnDate = DateTime.UtcNow;
+            borrowing.ReturnDate = DateTime.Today.ToUniversalTime();
 
             var book = await _bookRepository.GetByIdAsync(borrowing.BookId, cancellationToken)
                    ?? throw new NotFoundException($"Can't find the {borrowing.BookId} book!");
@@ -142,9 +139,9 @@ public class BorrowingService: IBorrowingService
     public async Task<double> CalculateFineAsync(long borrowingid, CancellationToken cancellationToken = default)
     {
         var borrowing = await _borrowingRepository.GetByIdAsync(borrowingid, cancellationToken);
-        if (borrowing.DueDate < DateTime.UtcNow)
+        if (borrowing is not null && borrowing.DueDate < DateTime.Today)
         {
-            return dailyFine * (DateTime.UtcNow - borrowing.DueDate).Days;
+            return dailyFine * (DateTime.Today - borrowing.DueDate).Days;
         }
         return 0;
     }
@@ -153,7 +150,7 @@ public class BorrowingService: IBorrowingService
     {
         var borrowings = _borrowingRepository.GetAllAsync(cancellationToken)
             .Result
-            .Where(x => x.Status == BorrowingStatus.Active && x.DueDate < DateTime.UtcNow);
+            .Where(x => x.Status == BorrowingStatus.Active && x.DueDate < DateTime.Today);
         foreach(var borrowing in borrowings)
         {
             borrowing.Status = BorrowingStatus.Overdue;

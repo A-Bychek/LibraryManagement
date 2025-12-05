@@ -5,6 +5,8 @@ namespace LibraryManagement.Infrastructure.Data;
 
 public class LibraryManagementDbContext : DbContext
 {
+    private LibraryManagementDbContext()
+    { }
     public LibraryManagementDbContext(DbContextOptions<LibraryManagementDbContext> options)
         : base(options) { }
 
