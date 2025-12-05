@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
@@ -15,13 +16,13 @@ namespace LibraryManagement.Infrastructure.Migrations
                 name: "Authors",
                 columns: table => new
                 {
-                    AuthorId = table.Column<long>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    FirstName = table.Column<string>(type: "TEXT", maxLength: 200, nullable: false),
-                    LastName = table.Column<string>(type: "TEXT", maxLength: 200, nullable: false),
-                    Biography = table.Column<string>(type: "TEXT", maxLength: 2000, nullable: true),
-                    DateOfBirth = table.Column<DateTime>(type: "TEXT", nullable: true),
-                    IsActive = table.Column<bool>(type: "INTEGER", nullable: false, defaultValue: true)
+                    AuthorId = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    FirstName = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    LastName = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    Biography = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: true),
+                    DateOfBirth = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true)
                 },
                 constraints: table =>
                 {
@@ -32,13 +33,13 @@ namespace LibraryManagement.Infrastructure.Migrations
                 name: "Categories",
                 columns: table => new
                 {
-                    CategoryId = table.Column<long>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Name = table.Column<string>(type: "TEXT", maxLength: 200, nullable: false),
-                    Description = table.Column<string>(type: "TEXT", maxLength: 2000, nullable: true),
-                    ParentCategoryId = table.Column<long>(type: "INTEGER", nullable: true),
-                    SortOrder = table.Column<int>(type: "INTEGER", nullable: false, defaultValue: 0),
-                    IsActive = table.Column<bool>(type: "INTEGER", nullable: false, defaultValue: true)
+                    CategoryId = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    Description = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: true),
+                    ParentCategoryId = table.Column<long>(type: "bigint", nullable: true),
+                    SortOrder = table.Column<int>(type: "integer", nullable: false, defaultValue: 0),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true)
                 },
                 constraints: table =>
                 {
@@ -55,8 +56,8 @@ namespace LibraryManagement.Infrastructure.Migrations
                 name: "Users",
                 columns: table => new
                 {
-                    UserId = table.Column<long>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true)
+                    UserId = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                 },
                 constraints: table =>
                 {
@@ -67,18 +68,18 @@ namespace LibraryManagement.Infrastructure.Migrations
                 name: "Books",
                 columns: table => new
                 {
-                    BookId = table.Column<long>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Title = table.Column<string>(type: "TEXT", maxLength: 200, nullable: false),
-                    ISBN = table.Column<string>(type: "TEXT", maxLength: 13, nullable: false),
-                    Description = table.Column<string>(type: "TEXT", maxLength: 2000, nullable: true),
-                    AuthorId = table.Column<long>(type: "INTEGER", nullable: false),
-                    CategoryId = table.Column<long>(type: "INTEGER", nullable: false),
-                    PublishedDate = table.Column<DateTime>(type: "TEXT", nullable: true),
-                    PageCount = table.Column<int>(type: "INTEGER", nullable: true),
-                    IsAvailable = table.Column<bool>(type: "INTEGER", nullable: false, defaultValue: true),
-                    CreatedDate = table.Column<DateTime>(type: "TEXT", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
-                    UpdatedDate = table.Column<DateTime>(type: "TEXT", nullable: true)
+                    BookId = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Title = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    ISBN = table.Column<string>(type: "character varying(13)", maxLength: 13, nullable: false),
+                    Description = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: true),
+                    AuthorId = table.Column<long>(type: "bigint", nullable: false),
+                    CategoryId = table.Column<long>(type: "bigint", nullable: false),
+                    PublishedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    PageCount = table.Column<int>(type: "integer", nullable: true),
+                    IsAvailable = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true),
+                    CreatedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
+                    UpdatedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -88,28 +89,27 @@ namespace LibraryManagement.Infrastructure.Migrations
                         column: x => x.AuthorId,
                         principalTable: "Authors",
                         principalColumn: "AuthorId",
-                        onDelete: ReferentialAction.SetNull);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Books_Categories_CategoryId",
                         column: x => x.CategoryId,
                         principalTable: "Categories",
                         principalColumn: "CategoryId",
-                        onDelete: ReferentialAction.SetNull);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Borrowings",
                 columns: table => new
                 {
-                    BorrowingId = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    BookId = table.Column<long>(type: "INTEGER", nullable: false),
-                    UserId = table.Column<long>(type: "INTEGER", nullable: false),
-                    BorrowDate = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    DueDate = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    ReturnDate = table.Column<DateTime>(type: "TEXT", nullable: true),
-                    Status = table.Column<string>(type: "TEXT", maxLength: 15, nullable: false),
-                    BookId1 = table.Column<long>(type: "INTEGER", nullable: true)
+                    BorrowingId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    BookId = table.Column<long>(type: "bigint", nullable: false),
+                    UserId = table.Column<long>(type: "bigint", nullable: false),
+                    BorrowDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    DueDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    ReturnDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    Status = table.Column<string>(type: "character varying(15)", maxLength: 15, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -119,12 +119,7 @@ namespace LibraryManagement.Infrastructure.Migrations
                         column: x => x.BookId,
                         principalTable: "Books",
                         principalColumn: "BookId",
-                        onDelete: ReferentialAction.SetNull);
-                    table.ForeignKey(
-                        name: "FK_Borrowings_Books_BookId1",
-                        column: x => x.BookId1,
-                        principalTable: "Books",
-                        principalColumn: "BookId");
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Borrowings_Users_UserId",
                         column: x => x.UserId,
@@ -157,12 +152,8 @@ namespace LibraryManagement.Infrastructure.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Borrowings_BookId",
                 table: "Borrowings",
-                column: "BookId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Borrowings_BookId1",
-                table: "Borrowings",
-                column: "BookId1");
+                column: "BookId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Borrowings_DueDate",

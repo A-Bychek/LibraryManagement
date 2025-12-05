@@ -26,9 +26,13 @@ builder.Services.AddSimpleInjector(container, options =>
     options.AddAspNetCore();
 });
 
+builder.Services.AddDbContext<LibraryManagementDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("Postgres")));
 var options = new DbContextOptionsBuilder<LibraryManagementDbContext>()
-  .UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"))
-  .Options;
+    .UseNpgsql(builder.Configuration.GetConnectionString("Postgres"))
+    .Options;
+
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 container.AddAutoMapper();
 container.AddApplication();

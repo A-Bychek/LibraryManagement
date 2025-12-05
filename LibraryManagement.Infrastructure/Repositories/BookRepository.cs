@@ -16,7 +16,7 @@ public class BookRepository: IBookRepository
         _context = context;
     }
 
-    public async Task<Book> GetByIdAsync(long bookId, CancellationToken cancellationToken = default)
+    public async Task<Book?> GetByIdAsync(long bookId, CancellationToken cancellationToken = default)
     {
         var book = await _context
             .Books
@@ -44,7 +44,7 @@ public class BookRepository: IBookRepository
     public async Task<Book> DeleteAsync(Book book, CancellationToken cancellationToken = default)
     {
         _context.Books.Remove(book);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(cancellationToken);
         return book;
     }
 
@@ -65,8 +65,8 @@ public class BookRepository: IBookRepository
         {
             var searchTerm = bookSearchArgs.SearchTerm.ToLower();
             query = query.Where(x =>
-                EF.Functions.Like(x.Title, $"%{searchTerm}%") ||
-                EF.Functions.Like(x.ISBN, $"%{searchTerm}%"));
+                EF.Functions.Like(x.Title.ToLower(), $"{searchTerm}%") ||
+                EF.Functions.Like(x.ISBN.ToLower(), $"{searchTerm}%"));
         }
 
         if (bookSearchArgs.AuthorId.HasValue)

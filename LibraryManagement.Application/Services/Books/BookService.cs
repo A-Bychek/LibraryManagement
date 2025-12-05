@@ -76,7 +76,7 @@ public class BookService : IBookService
     public async Task<DeleteBookDto> DeleteBookAsync(long bookId, CancellationToken cancellationToken = default)
     {
         var book = await _bookRepository.GetByIdAsync(bookId, cancellationToken)
-            ?? throw new NotFoundException($"Successfully removed the book with {bookId} bookId.");
+            ?? throw new NotFoundException($"Unable to delete, no book found with {bookId} bookId.");
 
         await _bookRepository.DeleteAsync(book, cancellationToken);
         return new DeleteBookDto

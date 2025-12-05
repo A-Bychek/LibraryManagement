@@ -103,7 +103,8 @@ public class GrpcBookServiceTests
             BookId = 11
         };
 
-        Assert.ThrowsAsync<NotFoundException>(async () => await _grpcBookService.GetBook(request, context));
+        await Assert.ThrowsAsync<RpcException>(
+            async () => await _interceptor.UnaryServerHandler(request, context, _grpcBookService.GetBook));
 
         _bookServiceMock.Verify(s =>
             s.GetBookAsync(11, context.CancellationToken),
@@ -267,29 +268,25 @@ public class GrpcBookServiceTests
     }
 
     [Fact]
-    public async Task DeletetBook_IfBookDoesntExist_ShouldThrowException()
+    public async Task DeleteBook_IfBookDoesntExist_ShouldThrowException()
     {
-        BookDeleteRequest bookDeleteRequest = new BookDeleteRequest();
-        DeleteBookDto deletedBookDto = new DeleteBookDto
+        BookDeleteRequest bookDeleteRequest = new BookDeleteRequest()
         {
-            Success = true,
-            Message = "Success message"
+            BookId = 11
         };
         ServerCallContext context = Mock.Of<ServerCallContext>();
 
         _bookServiceMock.Setup(s =>
-            s.DeleteBookAsync(1, context.CancellationToken))
-            .ReturnsAsync(deletedBookDto);
+            s.DeleteBookAsync(It.IsAny<long>(), context.CancellationToken))
+            .ThrowsAsync(new NotFoundException($"Unable to delete, no book found with 11 bookId."));
 
-        BookGetRequest request = new BookGetRequest
-        {
-            BookId = 11
-        };
+        RpcException grpcException = await Assert.ThrowsAsync<RpcException>(() =>
+           _interceptor.UnaryServerHandler(bookDeleteRequest, context, _grpcBookService.DeleteBook));
 
-        Assert.ThrowsAsync<NotFoundException>(async () => await _grpcBookService.GetBook(request, context));
+        Assert.Equal("Unable to delete, no book found with 11 bookId.", grpcException.Status.Detail);
 
         _bookServiceMock.Verify(s =>
-            s.GetBookAsync(11, context.CancellationToken),
+            s.DeleteBookAsync(11, context.CancellationToken),
             Times.Once);
     }
 
@@ -332,41 +329,6 @@ public class GrpcBookServiceTests
 
         BookListResponse result = await _grpcBookService.GetBooks(bookSearchRequest, context);
         Assert.Equal(books.TotalCount, result.TotalCount);
-
-        _bookServiceMock.Verify(s =>
-            s.GetBooksAsync(It.IsAny<BookSearchArgs>(), context.CancellationToken),
-            Times.Once);
-    }
-
-    [Fact]
-    public async Task GetBooks_IfBookGetRequestIsInvalid_ShouldThrowException()
-    {
-        BookDto book = new BookDto
-        {
-            BookId = 1,
-            Title = "Test Title",
-            ISBN = "1112223334445",
-            Description = "Test Description",
-            AuthorId = 1,
-            AuthorName = "Max Payne",
-            CategoryId = 1,
-            CategoryName = "Action",
-            PublishedDate = "2000-12-31",
-            PageCount = 200,
-            IsAvailable = true
-        };
-        PagedResult<BookDto> books =
-            PagedResult<BookDto>.Create([book], 1, 1, 15);
-
-        ServerCallContext context = Mock.Of<ServerCallContext>();
-
-        BookSearchRequest bookSearchRequest = new BookSearchRequest();
-
-        _bookServiceMock.Setup(s =>
-            s.GetBooksAsync(It.IsAny<BookSearchArgs>(), context.CancellationToken))
-            .ReturnsAsync(books);
-
-        Assert.ThrowsAsync<NotFoundException>(async () => await _grpcBookService.GetBooks(bookSearchRequest, context));
 
         _bookServiceMock.Verify(s =>
             s.GetBooksAsync(It.IsAny<BookSearchArgs>(), context.CancellationToken),

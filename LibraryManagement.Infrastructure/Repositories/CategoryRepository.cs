@@ -15,7 +15,7 @@ public class CategoryRepository: ICategoryRepository
         _context = context;
     }
 
-    public async Task<Category> GetByIdAsync(long categoryId, CancellationToken cancellationToken = default)
+    public async Task<Category?> GetByIdAsync(long categoryId, CancellationToken cancellationToken = default)
     {
         return await _context.Categories
             .Include(x => x.Books)
@@ -48,21 +48,13 @@ public class CategoryRepository: ICategoryRepository
             .Include(c => c.ParentCategory)
             .Include(c => c.Books)
             .AsQueryable();
-
-        foreach (var category in query)
-        {
-            if (category.ParentCategoryId > 0)
-            {
-                category.SubCategories = [.. query.Where(x => x.ParentCategoryId == category.CategoryId)];
-            }
-        }
-
+        
         if (!string.IsNullOrWhiteSpace(categorySearchArgs.SearchTerm))
         {
             var searchTerm = categorySearchArgs.SearchTerm.ToLower();
             query = query.Where(c =>
-                EF.Functions.Like(c.Name, $"%{searchTerm}%") ||
-                EF.Functions.Like(c.Description, $"%{searchTerm}%"));
+                EF.Functions.Like(c.Name.ToLower(), $"{searchTerm}%") ||
+                (!string.IsNullOrWhiteSpace(c.Description) && EF.Functions.Like(c.Description.ToLower(), $"{searchTerm}%")));
         }
 
         if (categorySearchArgs.ParentCategoryId.HasValue)
@@ -79,6 +71,11 @@ public class CategoryRepository: ICategoryRepository
             .OrderBy(c => c.SortOrder)
             .ThenBy(c => c.Name)
             .ToListAsync(cancellationToken);
+
+        foreach (var category in result)
+        {
+            category.SubCategories = [.. query.Where(x => x.ParentCategoryId == category.CategoryId)];
+        }
 
         return result;
     }

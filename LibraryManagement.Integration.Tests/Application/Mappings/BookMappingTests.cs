@@ -83,7 +83,7 @@ public class BookMappingTests : AutoMapperTestBase
         book.PublishedDate.Should().Be(book.PublishedDate);
         book.PageCount.Should().Be(book.PageCount);
         book.IsAvailable.Equals(true);
-        book.CreatedDate.Should().BeBefore(DateTime.UtcNow);
+        book.CreatedDate.Should().Be(DateTime.Today);
         book.UpdatedDate.Should().BeNull();
     }
 }

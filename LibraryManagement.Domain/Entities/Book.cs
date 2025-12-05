@@ -2,6 +2,21 @@
 
 public class Book
 {
+    public Book()
+    { }
+    public Book(string title, string isbn, string description,long authorId, long categoryId, DateTime publishedDate, int pageCount, bool isAvailable, DateTime createdDate, DateTime? updatedDate) 
+    {
+        Title = title;
+        ISBN = isbn;
+        Description = description;
+        AuthorId = authorId;
+        CategoryId = categoryId;
+        PublishedDate = publishedDate;
+        PageCount = pageCount;
+        IsAvailable = isAvailable;
+        CreatedDate = createdDate;
+        UpdatedDate = updatedDate;
+    }
     public long BookId { get; set; }
     public string Title { get; set; } = null!;
     public string ISBN { get; set; } = null!;
