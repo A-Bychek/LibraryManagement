@@ -263,12 +263,7 @@ public class BookRepositoryTests : IClassFixture<SqliteTestDatabaseFixture>
         using (AsyncScopedLifestyle.BeginScope(_fixture.Container))
         {
             IBookRepository _bookRepository = _fixture.Container.GetInstance<IBookRepository>();
-            BookSearchArgs args = new BookSearchArgs
-            {
-                AuthorId = 4,
-                PageNumber = 1,
-                PageSize = 15
-            };
+            BookSearchArgs args = new BookSearchArgs();
 
             PagedResult<Book>? results = await _bookRepository.FindAsync(args);
 

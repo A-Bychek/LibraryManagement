@@ -66,4 +66,10 @@ public class GrpcAuthorService: AuthorService.AuthorServiceBase
             $"isActive: {author.IsActive}");
         return _mapper.Map<AuthorResponse>(author);
     }
+
+    public override async Task<DeleteResponse> DeleteAuthor(AuthorDeleteRequest request, ServerCallContext context)
+    {
+        DeleteAuthorDto deletedAuthor = await _authorService.DeleteAuthorAsync(request.AuthorId, context.CancellationToken);
+        return _mapper.Map<DeleteResponse>(deletedAuthor);
+    }
 }

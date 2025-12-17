@@ -14,6 +14,7 @@ public class BookMappingProfile : Profile
             .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.Category != null ? src.Category.Name : "Unknown category"));
         CreateMap<CreateBookCommand, Book>()
             .ForMember(dest => dest.CreatedDate, opt => opt.MapFrom(src => DateTime.Today))
-            .ForMember(dest => dest.UpdatedDate, opt => opt.Ignore());
+            .ForMember(dest => dest.UpdatedDate, opt => opt.Ignore())
+            .ForMember(dest => dest.IsAvailable, opt => opt.MapFrom(src => true));
     }
 }

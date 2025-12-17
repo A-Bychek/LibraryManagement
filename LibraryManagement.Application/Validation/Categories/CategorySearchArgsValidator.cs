@@ -14,6 +14,7 @@ public class CategorySearchArgsValidator : AbstractValidator<CategorySearchArgs>
 
 
         RuleFor(x => x.ParentCategoryId)
-            .GreaterThanOrEqualTo(1).WithMessage("ParentCategoryId should be positive.").WithErrorCode("422");
+            .GreaterThanOrEqualTo(1).WithMessage("ParentCategoryId should be positive.").WithErrorCode("422")
+            .When(x => x.ParentCategoryId != 0);
     }
 }

@@ -31,7 +31,9 @@ public class CategoryRepository: ICategoryRepository
   
     public async Task<IEnumerable<Category>> GetCategoryTreeAsync(bool includeInactive, CancellationToken cancellationToken = default)
     {
-        var categories = await _context.Categories.Include(x => x.Books).OrderBy(s => s.CategoryId).ToListAsync();
+        var categories = await _context.Categories
+            .Include(c => c.ParentCategory)
+            .Include(x => x.Books).OrderBy(s => s.CategoryId).ToListAsync();
         foreach (var category in categories)
         {
             if (category?.ParentCategoryId > 0)
@@ -57,7 +59,7 @@ public class CategoryRepository: ICategoryRepository
                 (!string.IsNullOrWhiteSpace(c.Description) && EF.Functions.Like(c.Description.ToLower(), $"{searchTerm}%")));
         }
 
-        if (categorySearchArgs.ParentCategoryId.HasValue)
+        if (categorySearchArgs.ParentCategoryId.HasValue && categorySearchArgs.ParentCategoryId != 0)
         {
             query = query.Where(c => c.ParentCategoryId == categorySearchArgs.ParentCategoryId.Value);
         }

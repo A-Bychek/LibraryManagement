@@ -139,11 +139,23 @@ public class BorrowingService: IBorrowingService
     public async Task<double> CalculateFineAsync(long borrowingid, CancellationToken cancellationToken = default)
     {
         var borrowing = await _borrowingRepository.GetByIdAsync(borrowingid, cancellationToken);
-        if (borrowing is not null && borrowing.DueDate < DateTime.Today)
+
+        double fineAmount = 0;
+
+        if (borrowing is null || borrowing.Status == BorrowingStatus.Active && borrowing.DueDate > DateTime.Today) { fineAmount = 0; }
+        
+        if (borrowing.Status == BorrowingStatus.Overdue || 
+            (borrowing.Status == BorrowingStatus.Active && borrowing.DueDate < DateTime.Today))
         {
-            return dailyFine * (DateTime.Today - borrowing.DueDate).Days;
-        }
-        return 0;
+            fineAmount = dailyFine * (DateTime.Today - borrowing.DueDate).Days;
+        };
+
+        if (borrowing.Status == BorrowingStatus.Returned)
+        {
+            if (borrowing.ReturnDate < borrowing.DueDate) { fineAmount = 0; }
+            else {fineAmount = dailyFine * (borrowing.ReturnDate - borrowing.DueDate).Value.Days; }
+        };
+        return fineAmount;
     }
 
     public async Task UpdateStatuses(CancellationToken cancellationToken = default)

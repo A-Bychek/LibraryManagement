@@ -69,11 +69,8 @@ public class CategoryService : ICategoryService
             parent = await _categoryRepository.GetByIdAsync(createCategoryCommand.ParentCategoryId.Value, cancellationToken)
                          ?? throw new NotFoundException($"Can't find the {createCategoryCommand.ParentCategoryId.Value} category!");
         }
-        var category = new Category(
-            createCategoryCommand.Name,
-            createCategoryCommand.Description,
-            parent?.CategoryId
-            );
+        var category = _mapper.Map<Category>(createCategoryCommand);
+
         await _categoryRepository.AddAsync(category, cancellationToken);
         category = await _categoryRepository.GetByIdAsync(category.CategoryId, cancellationToken);
         return _mapper.Map<CategoryDto>(category);

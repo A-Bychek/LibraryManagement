@@ -69,12 +69,12 @@ public class BookRepository: IBookRepository
                 EF.Functions.Like(x.ISBN.ToLower(), $"{searchTerm}%"));
         }
 
-        if (bookSearchArgs.AuthorId.HasValue)
+        if (bookSearchArgs.AuthorId.HasValue && bookSearchArgs.AuthorId != 0)
         {
             query = query.Where(x => x.AuthorId == bookSearchArgs.AuthorId.Value);
         }
 
-        if (bookSearchArgs.CategoryId.HasValue)
+        if (bookSearchArgs.AuthorId.HasValue && bookSearchArgs.CategoryId != 0)
         {
             query = query.Where(x => x.CategoryId == bookSearchArgs.CategoryId.Value);
         }
