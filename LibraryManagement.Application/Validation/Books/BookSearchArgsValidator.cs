@@ -13,10 +13,12 @@ public class BookSearchArgsValidator : AbstractValidator<BookSearchArgs>
             .When(x => !string.IsNullOrEmpty(x.SearchTerm));
 
         RuleFor(x => x.AuthorId)
-            .GreaterThanOrEqualTo(1).WithMessage("AuthorId should be positive.").WithErrorCode("422");
+            .GreaterThanOrEqualTo(1).WithMessage("AuthorId should be positive.").WithErrorCode("422")
+            .When(x => x.AuthorId != 0);
 
         RuleFor(x => x.CategoryId)
-            .GreaterThanOrEqualTo(1).WithMessage("CategoryId should be positive.").WithErrorCode("422");
+            .GreaterThanOrEqualTo(1).WithMessage("CategoryId should be positive.").WithErrorCode("422")
+            .When(x => x.CategoryId != 0);
 
         RuleFor(x => x.PageNumber)
             .GreaterThanOrEqualTo(1).WithMessage("PageNumber should be positive.").WithErrorCode("422");

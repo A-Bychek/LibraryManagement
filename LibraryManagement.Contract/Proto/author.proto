@@ -9,6 +9,7 @@ service AuthorService {
   rpc GetAuthor(AuthorGetRequest) returns (AuthorGetResponse);
   rpc CreateAuthor(CreateAuthorRequest) returns (AuthorResponse);
   rpc UpdateAuthor(UpdateAuthorRequest) returns (AuthorResponse);
+  rpc DeleteAuthor(AuthorDeleteRequest) returns (DeleteResponse);
 }
 
 message AuthorSearchRequest {
@@ -57,4 +58,13 @@ message AuthorListResponse {
 
 message AuthorGetResponse {
   AuthorResponse author = 1;
+}
+
+message AuthorDeleteRequest {
+  int64 author_id = 1;
+}
+
+message DeleteResponse {
+  bool success = 1;
+  string message = 2;
 }

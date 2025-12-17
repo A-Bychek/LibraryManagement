@@ -47,19 +47,36 @@ builder.Services.AddScoped<GrpcBookService>(sp => container.GetInstance<GrpcBook
 builder.Services.AddScoped<GrpcBorrowingService>(sp => container.GetInstance<GrpcBorrowingService>());
 builder.Services.AddScoped<GrpcCategoryService>(sp => container.GetInstance<GrpcCategoryService>());
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: "MyAllowSpecificOrigins",
+                      policy =>
+                      {
+                          policy.AllowAnyHeader()
+                                .AllowAnyMethod()
+                                .AllowAnyOrigin()
+                                .WithExposedHeaders("Grpc-Status", "Grpc-Message", "Grpc-Encoding",
+                                "Grpc-Accept-Encoding", "Grpc-Status-Details-Bin")
+                                .DisallowCredentials();
+                      });
+});
+
 builder.Services.AddGrpc(options =>
     {
     options.Interceptors.Add<ExceptionHandlingInterceptor>();
     });
 
 var app = builder.Build();
+app.UseRouting();
+app.UseGrpcWeb();
 
 app.Services.UseSimpleInjector(container);
 
-app.MapGrpcService<GrpcAuthorService>();
-app.MapGrpcService<GrpcBookService>();
-app.MapGrpcService<GrpcBorrowingService>();
-app.MapGrpcService<GrpcCategoryService>();
+app.MapGrpcService<GrpcAuthorService>().EnableGrpcWeb();
+app.MapGrpcService<GrpcBookService>().EnableGrpcWeb();
+app.MapGrpcService<GrpcBorrowingService>().EnableGrpcWeb();
+app.MapGrpcService<GrpcCategoryService>().EnableGrpcWeb();
+app.UseCors("MyAllowSpecificOrigins");
 
 container.Verify();
 

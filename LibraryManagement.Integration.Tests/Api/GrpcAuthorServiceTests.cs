@@ -9,6 +9,7 @@ using LibraryManagement.Contract.Authors;
 using LibraryManagement.Contract.Commands.Author;
 using LibraryManagement.Contract.QueryModels.Authors;
 using LibraryManagement.Shared;
+using LibraryManagement.Shared.Exceptions;
 using Microsoft.Extensions.Logging;
 using Moq;
 
@@ -251,6 +252,58 @@ public class GrpcAuthorServiceTests
 
         _authorServiceMock.Verify(s =>
             s.GetAuthorsAsync(It.IsAny<AuthorSearchArgs>(), context.CancellationToken),
+            Times.Once);
+    }
+
+    public async Task DeleteAuthor_IfAuthorExists_ShouldReturnSuccess()
+    {
+        AuthorDeleteRequest authorDeleteRequest = new AuthorDeleteRequest
+        {
+            AuthorId = 1
+        };
+        DeleteAuthorDto deletedAuthorDto = new DeleteAuthorDto
+        {
+            Success = true,
+            Message = "Success message"
+        };
+        ServerCallContext context = Mock.Of<ServerCallContext>();
+
+        _authorServiceMock.Setup(s => s.DeleteAuthorAsync(1, context.CancellationToken))
+            .ReturnsAsync(deletedAuthorDto);
+
+        AuthorGetRequest authorGetRequest = new AuthorGetRequest
+        {
+            AuthorId = 1
+        };
+
+        DeleteResponse result = await _grpcAuthorService.DeleteAuthor(authorDeleteRequest, context);
+        Assert.Equal(deletedAuthorDto.Message, result.Message);
+
+        _authorServiceMock.Verify(s =>
+            s.DeleteAuthorAsync(1, context.CancellationToken),
+            Times.Once);
+    }
+
+    [Fact]
+    public async Task DeleteAuthor_IfAuthorDoesntExist_ShouldThrowException()
+    {
+        AuthorDeleteRequest authorDeleteRequest = new AuthorDeleteRequest()
+        {
+            AuthorId = 11
+        };
+        ServerCallContext context = Mock.Of<ServerCallContext>();
+
+        _authorServiceMock.Setup(s =>
+            s.DeleteAuthorAsync(It.IsAny<long>(), context.CancellationToken))
+            .ThrowsAsync(new NotFoundException($"Unable to delete, no author found with 11 authorId."));
+
+        RpcException grpcException = await Assert.ThrowsAsync<RpcException>(() =>
+           _interceptor.UnaryServerHandler(authorDeleteRequest, context, _grpcAuthorService.DeleteAuthor));
+
+        Assert.Equal("Unable to delete, no author found with 11 authorId.", grpcException.Status.Detail);
+
+        _authorServiceMock.Verify(s =>
+            s.DeleteAuthorAsync(11, context.CancellationToken),
             Times.Once);
     }
 }   

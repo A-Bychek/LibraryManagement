@@ -19,5 +19,6 @@ public class GrpcAuthorMappingProfile : Profile
             .ForMember(dest => dest.PageSize, opt => opt.MapFrom(src => src.PageSize > 0 ? src.PageSize : 15));
         CreateMap<PagedResult<AuthorDto>, AuthorListResponse>()
             .ForMember(dest => dest.Authors, opt => opt.Ignore());
+        CreateMap<DeleteAuthorDto, DeleteResponse>();
     }
 }

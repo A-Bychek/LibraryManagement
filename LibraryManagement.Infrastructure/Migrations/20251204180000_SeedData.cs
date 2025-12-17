@@ -58,21 +58,21 @@ namespace LibraryManagement.Infrastructure.Migrations
                         "Agatha",
                         "Christie",
                         "Author of detective novels",
-                        new DateTime(1890 - 09 - 15),
+                        new DateTime(1890,09, 15),
                         true
                     },
                 {
                         "Isaac",
                         "Asimov",
                         "Science fiction writer",
-                        new DateTime(1920 - 01 - 02),
+                        new DateTime(1920, 01, 02),
                         true
                     },
                 {
                         "Maxim",
                         "Gorky",
                         "The author of realistic novels",
-                        new DateTime(1868 - 03 - 28),
+                        new DateTime(1868, 03, 28),
                         true
                     }
                 }
@@ -349,7 +349,7 @@ namespace LibraryManagement.Infrastructure.Migrations
                        new DateTime(2025, 11, 12),
                        new DateTime(2025, 11, 26),
                        null,
-                       "Returned"
+                       "Overdue"
                    },
                {
                        1,
@@ -365,7 +365,7 @@ namespace LibraryManagement.Infrastructure.Migrations
                        new DateTime(2025, 11, 15),
                        new DateTime(2025, 11, 29),
                        new DateTime(2025, 11, 28),
-                       "Overdue"
+                       "Returned"
                    }
                }
                );
