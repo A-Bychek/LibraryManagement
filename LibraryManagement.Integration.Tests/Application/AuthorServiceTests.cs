@@ -31,7 +31,7 @@ public class AuthorServiceTests : IClassFixture<SqliteTestDatabaseFixture>
             Assert.Equal(1, author.AuthorId);
             Assert.Equal("Test Name 1", author.FirstName);
             Assert.Equal("Last Name 1", author.LastName);
-            Assert.Equal("1/1/1950 12:00:00 AM", author.DateOfBirth);
+            Assert.Equal(new DateTime(1950, 1, 1), DateTime.Parse(author.DateOfBirth));
         }
     }
     
@@ -87,7 +87,7 @@ public class AuthorServiceTests : IClassFixture<SqliteTestDatabaseFixture>
             Assert.Equal(4, addedAuthor.AuthorId);
             Assert.Equal("Test Name 4", addedAuthor.FirstName);
             Assert.Equal("Last Name 4", addedAuthor.LastName);
-            Assert.Equal("1/1/2000 12:00:00 AM", addedAuthor.DateOfBirth);
+            Assert.Equal(new DateTime(2000, 1, 1), DateTime.Parse(addedAuthor.DateOfBirth));
         }
     }
     
@@ -127,7 +127,7 @@ public class AuthorServiceTests : IClassFixture<SqliteTestDatabaseFixture>
             Assert.Equal(2, updatedAuthor.AuthorId);
             Assert.Equal("Test Name Updated", updatedAuthor.FirstName);
             Assert.Equal("Test Last Name Updated", updatedAuthor.LastName);
-            Assert.Equal("1/1/1970 12:00:00 AM", updatedAuthor.DateOfBirth);
+            Assert.Equal(new DateTime(1970, 1, 1), DateTime.Parse(updatedAuthor.DateOfBirth));
         }
     }
 
