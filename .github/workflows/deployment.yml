@@ -54,7 +54,7 @@ jobs:
             
             # Pull the latest image
             echo "Pulling image..."
-            sudo docker pull ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}:latest
+            docker pull ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}:latest
             
             # Stop and remove the old container if it exists
             echo "Stop and remove the old container if it exists..."
