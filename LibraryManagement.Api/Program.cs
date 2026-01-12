@@ -84,5 +84,5 @@ app.MapGet("/", () => $"Library Management Service is running - {DateTime.UtcNow
 
 app.Run();
 
-Log.Information("The application has completed its work. Close the logger.");
+Log.Information("The Library Management System application has completed its work. Close the logger.");
 Log.CloseAndFlush();
